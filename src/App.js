@@ -1,11 +1,10 @@
 import './App.css';
-import CoinbaseProWebSocket from './components/CoinbaseProWebsocket';
+import Home from './components/Home';
 
 function App() {
   return (
-    <div className="">
-      <h1>TraderSim</h1>
-      <CoinbaseProWebSocket />
+    <div className="font-jost">
+      <Home />
     </div>
   );
 }
