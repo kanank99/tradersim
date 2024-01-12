@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import CoinbaseProTradingGame from './CoinbaseProTradingGame';
 import Header from './Header';
 
-
 const Home = () => {
   const [bitcoinPrice, setBitcoinPrice] = useState(null);
   const [cash, setCash] = useState(1000);
@@ -44,17 +43,13 @@ const Home = () => {
   return (
     <div>
       <Header cash={cash} />
-      <h1>Real-time Bitcoin Price</h1>
-      {bitcoinPrice !== null ? (
-        <p>The current price of Bitcoin (BTC-USD) is: ${bitcoinPrice}</p>
-      ) : (
-        <p>Loading...</p>
-      )}
       <CoinbaseProTradingGame 
         bitcoinPrice={bitcoinPrice}
         cash={cash}
         setCash={setCash}
       />
+      
+      
     </div>
   );
 };
