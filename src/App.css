@@ -8,7 +8,28 @@ body {
 }
 
 .glass {
-  background: rgba(255,255,255,0.1);
+  background: #ffffff1a;
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0,0,0,0.2);
+}
+
+.glass-dark {
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0,0,0,0.2);
+}
+
+.glass-light {
+  background: #ffffff80;
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0,0,0,0.2);
+}
+
+.glass-semilight {
+  background: #ffffff26;
   backdrop-filter: blur(10px);
   border-radius: 10px;
   box-shadow: 0 0 10px 0 rgba(0,0,0,0.2);

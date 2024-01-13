@@ -14,10 +14,10 @@ function TradingViewWidget() {
         {
           "autosize": true,
           "symbol": "COINBASE:BTCUSD",
-          "interval": "D",
+          "interval": "5",
           "timezone": "Etc/UTC",
           "theme": "dark",
-          "style": "0",
+          "style": "1",
           "locale": "en",
           "enable_publishing": false,
           "backgroundColor": "rgba(13, 11, 14, 1)",
@@ -28,19 +28,15 @@ function TradingViewWidget() {
           "support_host": "https://www.tradingview.com"
         }`;
       container.current.appendChild(script);
-
-      // return () => {
-      //   // Cleanup: remove the script when component is unmounted
-      //   container.current.removeChild(script);
-      //   };
-
     },
     []
   );
 
   return (
+    <div className='h-[600px] grow'>
     <div className="tradingview-widget-container" ref={container} style={{ height: "100%", width: "100%" }}>
-      <div className="tradingview-widget-container__widget" style={{ height: "100%", width: "100%" }}></div>
+      <div className="tradingview-widget-container__widget" style={{ height: "100%", width: "90%" }}></div>
+    </div>
     </div>
   );
 }

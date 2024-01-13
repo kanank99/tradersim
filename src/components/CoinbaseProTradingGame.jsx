@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import btc from '../assets/btc-icon.png';
 import TradingViewWidget from './TradingViewWidget';
+import TradeStation from './TradeStation';
 
 
 const CoinbaseProTradingGame = (props) => {
@@ -21,7 +22,7 @@ const CoinbaseProTradingGame = (props) => {
 
   return (
     <div className='px-8'>
-      <div className='glass w-full mb-5 py-3 px-4 flex lg:max-w-[170px] justify-center lg:justify-start items-center'>
+      <div className='glass w-full mb-5 py-3 px-4 flex lg:max-w-[155px] justify-center lg:justify-start items-center'>
         <div className='flex w-full justify-center lg:justify-start items-center '>
           <img src={btc} 
           alt='Bitcoin logo'
@@ -33,9 +34,10 @@ const CoinbaseProTradingGame = (props) => {
           </div>
         </div>
       </div>
-      <TradingViewWidget />
-      <p>Cash: ${props.cash}</p>
-      <p>Bitcoin Price: ${props.bitcoinPrice}</p>
+      <div className='flex flex-col-reverse lg:flex-row gap-5'>
+        <TradeStation bitcoinPrice={props.bitcoinPrice} cash={props.cash} setCash={props.setCash} portfolioHoldings={portfolioHoldings} setPortfolioHoldings={setPortfolioHoldings} />
+        <TradingViewWidget />
+      </div>
       <p>Portfolio:</p>
       <ul>
         <li>
