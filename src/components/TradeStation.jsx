@@ -22,6 +22,94 @@ function TradeStation(props) {
 
     const thumbPosition = `calc(${(selectedMargin / 100) * 100}% - 0.5rem)`;
 
+    const spotBuy = () => {
+        // buy at market price
+        // check if user has enough cash
+        // update cash
+        // update portfolio holdings
+        // update portfolio history
+        // update trade history
+        
+        let cash = props.cash
+        let btcAmountInWallet = props.portfolioHoldings.btcAmount
+        let btcPrice = props.bitcoinPrice
+        let btcAmountToBuy = tradeQuantity.current.value
+        let usdCost = tradePrice.current.value * btcAmountToBuy
+
+        if (usdCost > cash) {
+            alert('Not enough cash')
+            return
+        }
+
+        let newCashBalance = (Number(cash) - Number(usdCost)).toFixed(2)
+        let newBtcAmountInWallet = Number(btcAmountInWallet) + Number(btcAmountToBuy)
+        let newBtcValueInWallet = newBtcAmountInWallet * btcPrice
+        let newPortfolioValue = (newCashBalance + newBtcValueInWallet)
+        let newPortfolioHoldings = {
+            btcAmount: newBtcAmountInWallet,
+            btcValue: newBtcValueInWallet,
+            cash: newCashBalance
+        }
+        let newPortfolioHistory = props.portfolioHistory
+        newPortfolioHistory.push(newPortfolioValue)
+        let newTradeHistory = props.tradeHistory
+        newTradeHistory.push({
+            type: 'Buy',
+            price: tradePrice.current.value,
+            quantity: btcAmountToBuy,
+            value: usdCost
+        })
+        props.setCash(newCashBalance)
+        props.setPortfolioHoldings(newPortfolioHoldings)
+        props.setPortfolioHistory(newPortfolioHistory)
+        props.setTradeHistory(newTradeHistory)
+        console.log(props.tradeHistory)
+    }
+
+    const spotSell = () => {
+        // sell at market price
+        // check if user has enough btc
+        // update cash
+        // update portfolio holdings
+        // update portfolio history
+        // update trade history
+        
+        let cash = props.cash
+        let btcAmountInWallet = props.portfolioHoldings.btcAmount
+        let btcPrice = props.bitcoinPrice
+        let btcAmountToSell = tradeQuantity.current.value
+        let usdCost = tradePrice.current.value * btcAmountToSell
+
+        if (btcAmountToSell > btcAmountInWallet) {
+            alert('Not enough BTC')
+            return
+        }
+
+        let newCashBalance = (Number(cash) + Number(usdCost)).toFixed(2)
+        let newBtcAmountInWallet = Number(btcAmountInWallet) - Number(btcAmountToSell)
+        let newBtcValueInWallet = newBtcAmountInWallet * btcPrice
+        let newPortfolioValue = newCashBalance + newBtcValueInWallet
+        let newPortfolioHoldings = {
+            btcAmount: newBtcAmountInWallet,
+            btcValue: newBtcValueInWallet,
+            cash: newCashBalance
+        }
+        let newPortfolioHistory = props.portfolioHistory
+        newPortfolioHistory.push(newPortfolioValue)
+        let newTradeHistory = props.tradeHistory
+        newTradeHistory.push({
+            type: 'Sell',
+            price: tradePrice.current.value,
+            quantity: btcAmountToSell,
+            value: usdCost
+        })
+        props.setCash(newCashBalance)
+        props.setPortfolioHoldings(newPortfolioHoldings)
+        props.setPortfolioHistory(newPortfolioHistory)
+        props.setTradeHistory(newTradeHistory)
+        console.log(props.tradeHistory)
+    }
+
   return (
     <div className='glass w-full lg:w-1/4 py-3 px-4 flex flex-col gap-4 box-border'>
         <div className='flex justify-between items-center '>
@@ -169,11 +257,11 @@ function TradeStation(props) {
         </div>
         {//place order button
         buy ?
-        <div className='flex justify-center items-center py-3 px-4 rounded-[10px] cursor-pointer bg-[#175530c5]'>
+        <div className='flex justify-center items-center py-3 px-4 rounded-[10px] cursor-pointer bg-[#175530c5]' onClick={spotBuy}>
             <p className='text-[#ffffff]'>Buy BTC-USD</p>
         </div>
         :
-        <div className='flex justify-center items-center py-3 px-4 rounded-[10px] cursor-pointer bg-[#bd424071]'>
+        <div className='flex justify-center items-center py-3 px-4 rounded-[10px] cursor-pointer bg-[#bd424071]' onClick={spotSell}>
             <p className='text-[#ffffff]'>Sell BTC-USD</p>
         </div>
         } 

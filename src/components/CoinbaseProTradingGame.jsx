@@ -11,6 +11,8 @@ const CoinbaseProTradingGame = (props) => {
   const [portfolioHoldingsUsdValue, setPortfolioHoldingsUsdValue] = useState({
     btcAmount: props.bitcoinPrice * portfolioHoldings.btcAmount,
   });
+  const [tradeHistory, setTradeHistory] = useState([]);
+  const [portfolioHistory, setPortfolioHistory] = useState([]);
 
   useEffect(() => {
     // Update portfolioHoldingsUsdValue when bitcoinPrice changes
@@ -35,7 +37,17 @@ const CoinbaseProTradingGame = (props) => {
         </div>
       </div>
       <div className='flex flex-col-reverse lg:flex-row gap-5'>
-        <TradeStation bitcoinPrice={props.bitcoinPrice} cash={props.cash} setCash={props.setCash} portfolioHoldings={portfolioHoldings} setPortfolioHoldings={setPortfolioHoldings} />
+        <TradeStation 
+        bitcoinPrice={props.bitcoinPrice} 
+        cash={props.cash} setCash={props.setCash} 
+        portfolioHoldings={portfolioHoldings} 
+        setPortfolioHoldings={setPortfolioHoldings} 
+        portfolioHoldingsUsdValue={portfolioHoldingsUsdValue} 
+        setPortfolioHoldingsUsdValue={setPortfolioHoldingsUsdValue} 
+        tradeHistory={tradeHistory} setTradeHistory={setTradeHistory}
+        portfolioHistory={portfolioHistory} 
+        setPortfolioHistory={setPortfolioHistory}
+        />
         <TradingViewWidget />
       </div>
       <p>Portfolio:</p>
