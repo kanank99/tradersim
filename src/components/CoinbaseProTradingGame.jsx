@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import btc from '../assets/btc-icon.png';
 import TradingViewWidget from './TradingViewWidget';
 import TradeStation from './TradeStation';
+import Orders from './Orders';
 
 
 const CoinbaseProTradingGame = (props) => {
@@ -11,7 +12,26 @@ const CoinbaseProTradingGame = (props) => {
   const [portfolioHoldingsUsdValue, setPortfolioHoldingsUsdValue] = useState({
     btcAmount: props.bitcoinPrice * portfolioHoldings.btcAmount,
   });
-  const [tradeHistory, setTradeHistory] = useState([]);
+  const [tradeHistory, setTradeHistory] = useState([
+    {
+      type: 'Sell',
+            market: 'BTC-USD',
+            price: 44000,
+            quantity: 0.01,
+            value: 440,
+            orderType: 'Market',
+            date: '2021-09-01'
+    },
+    {
+      type: 'Sell',
+            market: 'BTC-USD',
+            price: 44000,
+            quantity: 0.01,
+            value: 440,
+            orderType: 'Market',
+            date: '2021-09-01'
+    },
+  ]);
   const [portfolioHistory, setPortfolioHistory] = useState([]);
 
   useEffect(() => {
@@ -23,7 +43,7 @@ const CoinbaseProTradingGame = (props) => {
   }, [props.bitcoinPrice, portfolioHoldings.btcAmount]);
 
   return (
-    <div className='px-8'>
+    <div className='px-8 h-full'>
       <div className='glass w-full mb-5 py-3 px-4 flex lg:max-w-[155px] justify-center lg:justify-start items-center'>
         <div className='flex w-full justify-center lg:justify-start items-center '>
           <img src={btc} 
@@ -50,12 +70,13 @@ const CoinbaseProTradingGame = (props) => {
         />
         <TradingViewWidget />
       </div>
-      <p>Portfolio:</p>
+      <Orders tradeHistory={tradeHistory} />
+      {/* <p>Portfolio:</p>
       <ul>
         <li>
           Bitcoin (BTC): {portfolioHoldings.btcAmount} (Value: ${portfolioHoldingsUsdValue.btcAmount})
         </li>
-      </ul>
+      </ul> */}
     </div>
   );
 };

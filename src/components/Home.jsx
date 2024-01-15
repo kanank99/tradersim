@@ -41,7 +41,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div>
+    <div className='h-full'>
       <Header cash={cash} />
       <CoinbaseProTradingGame 
         bitcoinPrice={bitcoinPrice}

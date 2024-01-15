@@ -1,9 +1,14 @@
+
+html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   /* background: radial-gradient(circle at center 0,#7877c6 -300%,#000212 90%) no-repeat; */
   background: #0d0b0e;
-  height: 100svh;
-  margin: 0;
-  padding: 0;
+  height: 100%;
   color: aliceblue;
 }
 

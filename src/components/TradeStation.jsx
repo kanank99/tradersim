@@ -87,7 +87,8 @@ function TradeStation(props) {
             quantity: btcAmountToBuy,
             value: usdCost,
             orderType: selectedOrderType,
-            date: currentDate
+            date: currentDate,
+            status: 'closed'
         })
         props.setCash(newCashBalance)
         props.setPortfolioHoldings(newPortfolioHoldings)
@@ -149,7 +150,8 @@ function TradeStation(props) {
             quantity: btcAmountToSell,
             value: usdCost,
             orderType: selectedOrderType,
-            date: currentDate
+            date: currentDate,
+            status: 'closed'
         })
         props.setCash(newCashBalance)
         props.setPortfolioHoldings(newPortfolioHoldings)
@@ -165,10 +167,10 @@ function TradeStation(props) {
             <p className='text-2xl'>BTC-USD</p>
         </div>
         <div className='flex w-full glass'>
-            <div className={`py-2 w-full h-full text-[#ffffffb3] text-center rounded-[10px] cursor-pointer ${spot ? 'bg-[#ffffffc0] text-[#000000b3]' : null}`} onClick={() => {setSpot(true); setMargin(false)}}> 
+            <div className={`py-2 w-full h-full text-[#ffffffb3] text-center rounded-[10px] cursor-pointer ${spot ? 'bg-[#ffffffc0] text-[#050505b3]' : null}`} onClick={() => {setSpot(true); setMargin(false)}}> 
                 <p className={`${spot ? null : 'hover:text-[white]'}`}>Spot</p>
             </div>
-            <div className={`py-2 w-full h-full text-[#ffffffb3] text-center rounded-[10px] cursor-pointer ${margin ? 'bg-[#ffffffc0] text-[#000000b3]' : null}`} onClick={() => {setMargin(true); setSpot(false)}}>
+            <div className={`py-2 w-full h-full text-[#ffffffb3] text-center rounded-[10px] cursor-pointer ${margin ? 'bg-[#ffffffc0] text-[#050505b3]' : null}`} onClick={() => {setMargin(true); setSpot(false)}}>
                 <p className={`${margin ? null : 'hover:text-[white]'}`}>Margin</p>
             </div>    
         </div>
