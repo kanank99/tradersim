@@ -22,18 +22,44 @@ function TradeStation(props) {
 
     const thumbPosition = `calc(${(selectedMargin / 100) * 100}% - 0.5rem)`;
 
-    const spotBuy = () => {
-        // buy at market price
-        // check if user has enough cash
-        // update cash
-        // update portfolio holdings
-        // update portfolio history
-        // update trade history
+    const Buy = () => {
+    
+        if (spot) {
+            spotBuy()
+        }
+        // } else if (margin) {
+        //     marginBuy()
+        // }
         
+    }
+
+    const Sell = () => {
+
+        if (spot) {
+            spotSell()
+        }
+        // } else if (margin) {
+        //     marginSell()
+        // }
+    }
+
+    const spotBuy = () => {
+
+
         let cash = props.cash
         let btcAmountInWallet = props.portfolioHoldings.btcAmount
         let btcPrice = props.bitcoinPrice
+
+        // buy at market price
+
+        if (selectedOrderType === 'Market') {
         let btcAmountToBuy = tradeQuantity.current.value
+
+        if (btcAmountToBuy === 0 || btcAmountToBuy === '') {
+            alert('Please enter a quantity')
+            return
+        }
+
         let usdCost = tradePrice.current.value * btcAmountToBuy
 
         if (usdCost > cash) {
@@ -50,20 +76,33 @@ function TradeStation(props) {
             btcValue: newBtcValueInWallet,
             cash: newCashBalance
         }
+        let currentDate = new Date()
         let newPortfolioHistory = props.portfolioHistory
         newPortfolioHistory.push(newPortfolioValue)
         let newTradeHistory = props.tradeHistory
         newTradeHistory.push({
             type: 'Buy',
+            market: 'BTC-USD',
             price: tradePrice.current.value,
             quantity: btcAmountToBuy,
-            value: usdCost
+            value: usdCost,
+            orderType: selectedOrderType,
+            date: currentDate
         })
         props.setCash(newCashBalance)
         props.setPortfolioHoldings(newPortfolioHoldings)
         props.setPortfolioHistory(newPortfolioHistory)
         props.setTradeHistory(newTradeHistory)
         console.log(props.tradeHistory)
+
+        } else if (selectedOrderType === 'Limit') {
+
+            // open a limit position and wait for price to reach limit price
+
+            // when the price reaches limit price, execute trade
+
+        }
+        
     }
 
     const spotSell = () => {
@@ -80,6 +119,11 @@ function TradeStation(props) {
         let btcAmountToSell = tradeQuantity.current.value
         let usdCost = tradePrice.current.value * btcAmountToSell
 
+        if (btcAmountToSell === 0 || btcAmountToSell === '') {
+            alert('Please enter a quantity')
+            return      
+        }
+
         if (btcAmountToSell > btcAmountInWallet) {
             alert('Not enough BTC')
             return
@@ -94,14 +138,18 @@ function TradeStation(props) {
             btcValue: newBtcValueInWallet,
             cash: newCashBalance
         }
+        let currentDate = new Date()
         let newPortfolioHistory = props.portfolioHistory
         newPortfolioHistory.push(newPortfolioValue)
         let newTradeHistory = props.tradeHistory
         newTradeHistory.push({
             type: 'Sell',
+            market: 'BTC-USD',
             price: tradePrice.current.value,
             quantity: btcAmountToSell,
-            value: usdCost
+            value: usdCost,
+            orderType: selectedOrderType,
+            date: currentDate
         })
         props.setCash(newCashBalance)
         props.setPortfolioHoldings(newPortfolioHoldings)
@@ -162,45 +210,45 @@ function TradeStation(props) {
         </div>
         {//order price
         }
-        <div class="py-2 px-5 glass border-transparent rounded-lg focus:ring-[#3578ff]">
-            <div class="w-full flex justify-between items-center gap-x-3" data-hs-input-number>
+        <div className="py-2 px-5 glass border-transparent rounded-lg focus:ring-[#3578ff]">
+            <div className="w-full flex justify-between items-center gap-x-3" data-hs-input-number>
                 <div>
-                <span class="block text-md text-[#ffffffb3]">{selectedOrderType} price</span>
+                <span className="block text-md text-[#ffffffb3]">{selectedOrderType} price</span>
                 { //if market order, disable input
                     selectedOrderType === 'Market' ? 
-                    <input class="p-0 bg-transparent border-0 text-white outline-none border-none w-full" type="text" value={props.bitcoinPrice} data-hs-input-number-input ref={tradePrice} readOnly /> 
+                    <input className="p-0 bg-transparent border-0 text-white outline-none border-none w-full" type="text" value={props.bitcoinPrice} data-hs-input-number-input ref={tradePrice} readOnly /> 
                     :
-                    <input class="p-0 bg-transparent border-0 text-white outline-none border-none" type="text" placeholder={props.bitcoinPrice} data-hs-input-number-input ref={tradePrice} />
+                    <input className="p-0 bg-transparent border-0 text-white outline-none border-none" type="text" placeholder={props.bitcoinPrice} data-hs-input-number-input ref={tradePrice} />
                 }   
 
                     
                 </div>
-                <div class="flex justify-end items-center gap-x-1.5">
+                <div className="flex justify-end items-center gap-x-1.5">
                     <p className=''>USD</p>
                 </div>
             </div>
         </div>
         {//order quantity in BTC
         }
-        <div class="flex gap-4">
-            <div class="py-1 px-5 glass border-transparent rounded-lg focus:ring-[#3578ff]">
-                <div class="w-full flex justify-between items-center gap-x-3" data-hs-input-number>
+        <div className="flex gap-4">
+            <div className="py-1 px-5 glass border-transparent rounded-lg focus:ring-[#3578ff]">
+                <div className="w-full flex justify-between items-center gap-x-3" data-hs-input-number>
                     <div>
-                        <span class="block text-md text-[#ffffffb3]">Quantity</span>
-                        <input class="p-0 bg-transparent border-0 text-white outline-none border-none w-full" type="text" value='0.01' data-hs-input-number-input ref={tradeQuantity} />
+                        <span className="block text-md text-[#ffffffb3]">Quantity</span>
+                        <input className="p-0 bg-transparent border-0 text-white outline-none border-none w-full" type="number" placeholder='0.01' data-hs-input-number-input ref={tradeQuantity} />
                     </div>
-                    <div class="flex justify-end items-center gap-x-1.5">
+                    <div className="flex justify-end items-center gap-x-1.5">
                         <p className=''>BTC</p>
                     </div>
                 </div>
             </div>
-            <div class="py-1 px-5 glass border-transparent rounded-lg focus:ring-[#3578ff]">
-                <div class="w-full flex justify-between items-center gap-x-3" data-hs-input-number>
+            <div className="py-1 px-5 glass border-transparent rounded-lg focus:ring-[#3578ff]">
+                <div className="w-full flex justify-between items-center gap-x-3" data-hs-input-number>
                     <div>
-                        <span class="block text-md text-[#ffffffb3]">Total</span>
-                        <input class="p-0 bg-transparent border-0 text-white outline-none border-none w-full" type="text" value={total} readOnly data-hs-input-number-input />
+                        <span className="block text-md text-[#ffffffb3]">Total</span>
+                        <input className="p-0 bg-transparent border-0 text-white outline-none border-none w-full" type="number" value={total} readOnly data-hs-input-number-input />
                     </div>
-                    <div class="flex justify-end items-center gap-x-1.5">
+                    <div className="flex justify-end items-center gap-x-1.5">
                         <p className=''>USD</p>
                     </div>
                 </div>
@@ -257,11 +305,11 @@ function TradeStation(props) {
         </div>
         {//place order button
         buy ?
-        <div className='flex justify-center items-center py-3 px-4 rounded-[10px] cursor-pointer bg-[#175530c5]' onClick={spotBuy}>
+        <div className='flex justify-center items-center py-3 px-4 rounded-[10px] cursor-pointer bg-[#175530c5] select-none' onClick={Buy}>
             <p className='text-[#ffffff]'>Buy BTC-USD</p>
         </div>
         :
-        <div className='flex justify-center items-center py-3 px-4 rounded-[10px] cursor-pointer bg-[#bd424071]' onClick={spotSell}>
+        <div className='flex justify-center items-center py-3 px-4 rounded-[10px] cursor-pointer bg-[#bd424071] select-none' onClick={Sell}>
             <p className='text-[#ffffff]'>Sell BTC-USD</p>
         </div>
         } 
