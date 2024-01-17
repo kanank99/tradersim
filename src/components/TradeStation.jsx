@@ -3,6 +3,8 @@ import { useState, useRef, useEffect } from 'react'
 
 function TradeStation(props) {
 
+    const limitOrders = props.limitOrders
+
     const [spot, setSpot] = useState(true)
     const [margin, setMargin] = useState(false)
     const [buy, setBuy] = useState(true)
@@ -13,6 +15,7 @@ function TradeStation(props) {
     const tradePrice = useRef(0)
     const tradeQuantity = useRef(0)
     const [selectedMargin, setSelectedMargin] = useState(1)
+
 
     useEffect(() => {
         // Update total when tradePrice or tradeQuantity changes
@@ -53,55 +56,67 @@ function TradeStation(props) {
         // buy at market price
 
         if (selectedOrderType === 'Market') {
-        let btcAmountToBuy = tradeQuantity.current.value
+            let btcAmountToBuy = tradeQuantity.current.value
 
-        if (btcAmountToBuy === 0 || btcAmountToBuy === '') {
-            alert('Please enter a quantity')
-            return
-        }
+            if (btcAmountToBuy === 0 || btcAmountToBuy === '') {
+                alert('Please enter a quantity')
+                return
+            }
 
-        let usdCost = tradePrice.current.value * btcAmountToBuy
+            let usdCost = tradePrice.current.value * btcAmountToBuy
 
-        if (usdCost > cash) {
-            alert('Not enough cash')
-            return
-        }
+            if (usdCost > cash) {
+                alert('Not enough cash')
+                return
+            }
 
-        let newCashBalance = (Number(cash) - Number(usdCost)).toFixed(2)
-        let newBtcAmountInWallet = Number(btcAmountInWallet) + Number(btcAmountToBuy)
-        let newBtcValueInWallet = newBtcAmountInWallet * btcPrice
-        let newPortfolioValue = (newCashBalance + newBtcValueInWallet)
-        let newPortfolioHoldings = {
-            btcAmount: newBtcAmountInWallet,
-            btcValue: newBtcValueInWallet,
-            cash: newCashBalance
-        }
-        let currentDate = new Date()
-        let newPortfolioHistory = props.portfolioHistory
-        newPortfolioHistory.push(newPortfolioValue)
-        let newTradeHistory = props.tradeHistory
-        newTradeHistory.push({
-            type: 'Buy',
-            market: 'BTC-USD',
-            price: tradePrice.current.value,
-            quantity: btcAmountToBuy,
-            value: usdCost,
-            orderType: selectedOrderType,
-            date: currentDate,
-            status: 'closed'
-        })
-        props.setCash(newCashBalance)
-        props.setPortfolioHoldings(newPortfolioHoldings)
-        props.setPortfolioHistory(newPortfolioHistory)
-        props.setTradeHistory(newTradeHistory)
-        console.log(props.tradeHistory)
+            let newCashBalance = (Number(cash) - Number(usdCost)).toFixed(2)
+            let newBtcAmountInWallet = Number(btcAmountInWallet) + Number(btcAmountToBuy)
+            let newBtcValueInWallet = newBtcAmountInWallet * btcPrice
+            let newPortfolioValue = (newCashBalance + newBtcValueInWallet)
+            let newPortfolioHoldings = {
+                btcAmount: newBtcAmountInWallet,
+                btcValue: newBtcValueInWallet,
+                cash: newCashBalance
+            }
+            let currentDate = new Date()
+            let newPortfolioHistory = props.portfolioHistory
+            newPortfolioHistory.push(newPortfolioValue)
+            let newTradeHistory = props.tradeHistory
+            newTradeHistory.push({
+                isOpen: false,
+                type: 'Buy',
+                market: 'BTC-USD',
+                price: tradePrice.current.value,
+                quantity: btcAmountToBuy,
+                value: usdCost,
+                orderType: selectedOrderType,
+                date: currentDate,
+            })
+            props.setCash(newCashBalance)
+            props.setPortfolioHoldings(newPortfolioHoldings)
+            props.setPortfolioHistory(newPortfolioHistory)
+            props.setTradeHistory(newTradeHistory)
+            console.log(props.tradeHistory)
 
         } else if (selectedOrderType === 'Limit') {
 
             // open a limit position and wait for price to reach limit price
-
             // when the price reaches limit price, execute trade
 
+            let currentDate = new Date()
+
+            const newLimitOrder = {
+                isOpen: true,
+                limitPrice: parseFloat(tradePrice.current.value),
+                quantity: parseFloat(tradeQuantity.current.value),
+                type: 'Buy',
+                market: 'BTC-USD',
+                date: currentDate,
+                orderType: selectedOrderType,
+                status: 'Unfilled'
+            }
+            props.setLimitOrders([...limitOrders, newLimitOrder]);
         }
         
     }
@@ -144,6 +159,7 @@ function TradeStation(props) {
         newPortfolioHistory.push(newPortfolioValue)
         let newTradeHistory = props.tradeHistory
         newTradeHistory.push({
+            isOpen: false,
             type: 'Sell',
             market: 'BTC-USD',
             price: tradePrice.current.value,
@@ -151,7 +167,6 @@ function TradeStation(props) {
             value: usdCost,
             orderType: selectedOrderType,
             date: currentDate,
-            status: 'closed'
         })
         props.setCash(newCashBalance)
         props.setPortfolioHoldings(newPortfolioHoldings)

@@ -12,27 +12,9 @@ const CoinbaseProTradingGame = (props) => {
   const [portfolioHoldingsUsdValue, setPortfolioHoldingsUsdValue] = useState({
     btcAmount: props.bitcoinPrice * portfolioHoldings.btcAmount,
   });
-  const [tradeHistory, setTradeHistory] = useState([
-    {
-      type: 'Sell',
-            market: 'BTC-USD',
-            price: 44000,
-            quantity: 0.01,
-            value: 440,
-            orderType: 'Market',
-            date: '2021-09-01'
-    },
-    {
-      type: 'Sell',
-            market: 'BTC-USD',
-            price: 44000,
-            quantity: 0.01,
-            value: 440,
-            orderType: 'Market',
-            date: '2021-09-01'
-    },
-  ]);
+  const [tradeHistory, setTradeHistory] = useState([]);
   const [portfolioHistory, setPortfolioHistory] = useState([]);
+  const [limitOrders, setLimitOrders] = useState([]);
 
   useEffect(() => {
     // Update portfolioHoldingsUsdValue when bitcoinPrice changes
@@ -67,10 +49,12 @@ const CoinbaseProTradingGame = (props) => {
         tradeHistory={tradeHistory} setTradeHistory={setTradeHistory}
         portfolioHistory={portfolioHistory} 
         setPortfolioHistory={setPortfolioHistory}
+        limitOrders={limitOrders}
+        setLimitOrders={setLimitOrders}
         />
         <TradingViewWidget />
       </div>
-      <Orders tradeHistory={tradeHistory} />
+      <Orders tradeHistory={tradeHistory} limitOrders={limitOrders} setLimitOrders={setLimitOrders} />
       {/* <p>Portfolio:</p>
       <ul>
         <li>
