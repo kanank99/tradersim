@@ -3,13 +3,15 @@ import { useState, useEffect } from 'react'
 
 function Orders(props) {
 
-  const [selectedForm, setSelectedForm] = useState('closedOrders')
   const [orders, setOrders] = useState([])
   const [openOrders, setOpenOrders] = useState([])
   // const closedOrders = orders.filter(order => order.status === 'closed')
   // const openOrders = orders.filter(order => order.status === 'open')
   // const fills = orders.filter(order => order.status === 'filled')
   // const positions = orders.filter(order => order.status === 'position')
+
+  const selectedForm = props.selectedForm
+  const setSelectedForm = props.setSelectedForm
 
   useEffect(() => {
     setOrders(props.tradeHistory);

@@ -1,9 +1,11 @@
 import React from 'react'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 
 function TradeStation(props) {
 
     const limitOrders = props.limitOrders
+    const setLimitOrders = props.setLimitOrders
+    const setSelectedForm = props.setSelectedForm
 
     const [spot, setSpot] = useState(true)
     const [margin, setMargin] = useState(false)
@@ -22,6 +24,140 @@ function TradeStation(props) {
         // fixed to 2 decimal places
         setTotal((tradePrice.current.value * tradeQuantity.current.value).toFixed(2))
     }, [tradePrice.current.value, tradeQuantity.current.value]);
+
+    const executeLimitOrder = useCallback(async (order) => {
+        // Implement the logic for executing the limit order
+        // This function should return the updated order details
+        // For example, simulate a delay with setTimeout and return the order
+
+        if (order.type === 'Buy') {
+            let cash = props.cash
+            let btcAmountInWallet = props.portfolioHoldings.btcAmount
+            let btcPrice = props.bitcoinPrice
+    
+            let usdCost = order.limitPrice * order.quantity
+    
+            if (usdCost > cash) {
+                alert('Not enough cash')
+                return
+            }
+    
+            let newCashBalance = (Number(cash) - Number(usdCost)).toFixed(2)
+            let newBtcAmountInWallet = Number(btcAmountInWallet) + Number(order.quantity)
+            let newBtcValueInWallet = newBtcAmountInWallet * btcPrice
+            let newPortfolioValue = (newCashBalance + newBtcValueInWallet)
+            let newPortfolioHoldings = {
+                btcAmount: newBtcAmountInWallet,
+                btcValue: newBtcValueInWallet,
+                cash: newCashBalance
+            }
+            let currentDate = new Date()
+            let newPortfolioHistory = props.portfolioHistory
+            newPortfolioHistory.push(newPortfolioValue)
+            let newTradeHistory = props.tradeHistory
+            newTradeHistory.push({
+                isOpen: false,
+                type: 'Buy',
+                market: 'BTC-USD',
+                price: order.limitPrice,
+                quantity: order.quantity,
+                value: usdCost,
+                orderType: order.orderType,
+                date: currentDate,
+            })
+            props.setCash(newCashBalance)
+            props.setPortfolioHoldings(newPortfolioHoldings)
+            props.setPortfolioHistory(newPortfolioHistory)
+            props.setTradeHistory(newTradeHistory)
+            console.log(props.tradeHistory)
+    
+        } else if (order.type === 'Sell') {
+
+            let cash = props.cash
+            let btcAmountInWallet = props.portfolioHoldings.btcAmount
+            let btcPrice = props.bitcoinPrice
+            let btcAmountToSell = order.quantity
+            let usdCost = order.limitPrice * btcAmountToSell
+
+            if (btcAmountToSell > btcAmountInWallet) {
+                alert('Not enough BTC')
+                return
+            }
+            
+            let newCashBalance = (Number(cash) + Number(usdCost)).toFixed(2)
+            let newBtcAmountInWallet = Number(btcAmountInWallet) - Number(btcAmountToSell)
+            let newBtcValueInWallet = newBtcAmountInWallet * btcPrice
+            let newPortfolioValue = newCashBalance + newBtcValueInWallet
+            let newPortfolioHoldings = {
+                btcAmount: newBtcAmountInWallet,
+                btcValue: newBtcValueInWallet,
+                cash: newCashBalance
+            }
+            let currentDate = new Date()
+            let newPortfolioHistory = props.portfolioHistory
+            newPortfolioHistory.push(newPortfolioValue)
+            let newTradeHistory = props.tradeHistory
+            newTradeHistory.push({
+                isOpen: false,
+                type: 'Sell',
+                market: 'BTC-USD',
+                price: order.limitPrice,
+                quantity: btcAmountToSell,
+                value: usdCost,
+                orderType: order.orderType,
+                date: currentDate,
+            })
+            props.setCash(newCashBalance)
+            props.setPortfolioHoldings(newPortfolioHoldings)
+            props.setPortfolioHistory(newPortfolioHistory)
+            props.setTradeHistory(newTradeHistory)
+            console.log(props.tradeHistory)
+        }
+        
+
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(order);
+          }, 100); // Simulating a delay of 1 second
+        });
+      }, [props]);
+
+    useEffect(() => {
+        const checkLimitOrders = async () => {
+          const currentMarketPrice = props.bitcoinPrice;
+    
+          // Create a Promise for each limit order
+          const limitOrderPromises = limitOrders.map(async (order) => {
+            if (order.isOpen) {
+              if (
+                (order.type === 'Buy' && currentMarketPrice <= order.limitPrice) ||
+                (order.type === 'Sell' && currentMarketPrice >= order.limitPrice)
+              ) {
+                // Execute trade logic
+                const executedOrder = await executeLimitOrder(order);
+                return { ...executedOrder, isOpen: false, status: 'Filled' };
+              } else {
+                return order;
+              }
+            } else {
+              return order;
+            }
+          });
+    
+          // Wait for all promises to resolve
+          const updatedOrders = await Promise.all(limitOrderPromises);
+    
+          // Update the array of limit orders
+          setLimitOrders(updatedOrders);
+        };
+    
+        const intervalId = setInterval(() => {
+          checkLimitOrders();
+        }, 1000); // Check every 10 seconds (adjust as needed)
+    
+        // Cleanup on component unmount
+        return () => clearInterval(intervalId);
+      }, [props.bitcoinPrice, limitOrders, setLimitOrders, executeLimitOrder]);
 
     const thumbPosition = `calc(${(selectedMargin / 100) * 100}% - 0.5rem)`;
 
@@ -52,23 +188,22 @@ function TradeStation(props) {
         let cash = props.cash
         let btcAmountInWallet = props.portfolioHoldings.btcAmount
         let btcPrice = props.bitcoinPrice
+        let btcAmountToBuy = tradeQuantity.current.value
+        let usdCost = tradePrice.current.value * btcAmountToBuy
+
+
+        if (btcAmountToBuy === 0 || btcAmountToBuy === '') {
+            alert('Please enter a quantity')
+            return
+        }
+        if (usdCost > cash) {
+            alert('Not enough cash')
+            return
+        }
 
         // buy at market price
 
         if (selectedOrderType === 'Market') {
-            let btcAmountToBuy = tradeQuantity.current.value
-
-            if (btcAmountToBuy === 0 || btcAmountToBuy === '') {
-                alert('Please enter a quantity')
-                return
-            }
-
-            let usdCost = tradePrice.current.value * btcAmountToBuy
-
-            if (usdCost > cash) {
-                alert('Not enough cash')
-                return
-            }
 
             let newCashBalance = (Number(cash) - Number(usdCost)).toFixed(2)
             let newBtcAmountInWallet = Number(btcAmountInWallet) + Number(btcAmountToBuy)
@@ -104,6 +239,16 @@ function TradeStation(props) {
             // open a limit position and wait for price to reach limit price
             // when the price reaches limit price, execute trade
 
+            if (tradePrice.current.value === 0 || tradePrice.current.value === '') {
+                alert('Please enter a price')
+                return
+            }
+
+            if (tradePrice.current.value > btcPrice) {
+                alert('Limit price must be lower than current price')
+                return
+            }
+
             let currentDate = new Date()
 
             const newLimitOrder = {
@@ -117,6 +262,7 @@ function TradeStation(props) {
                 status: 'Unfilled'
             }
             props.setLimitOrders([...limitOrders, newLimitOrder]);
+            setSelectedForm('openOrders')
         }
         
     }
@@ -144,6 +290,8 @@ function TradeStation(props) {
             alert('Not enough BTC')
             return
         }
+
+        if (selectedOrderType === 'Market') {
 
         let newCashBalance = (Number(cash) + Number(usdCost)).toFixed(2)
         let newBtcAmountInWallet = Number(btcAmountInWallet) - Number(btcAmountToSell)
@@ -173,6 +321,37 @@ function TradeStation(props) {
         props.setPortfolioHistory(newPortfolioHistory)
         props.setTradeHistory(newTradeHistory)
         console.log(props.tradeHistory)
+
+        } else if (selectedOrderType === 'Limit') {
+            
+            if (tradePrice.current.value === 0 || tradePrice.current.value === '') {
+                alert('Please enter a price')
+                return
+            }
+
+            if (tradePrice.current.value < btcPrice) {
+                alert('Limit price must be higher than current price')
+                return
+            }
+
+                // open a limit position and wait for price to reach limit price
+                // when the price reaches limit price, execute trade
+    
+                let currentDate = new Date()
+    
+                const newLimitOrder = {
+                    isOpen: true,
+                    limitPrice: parseFloat(tradePrice.current.value),
+                    quantity: parseFloat(tradeQuantity.current.value),
+                    type: 'Sell',
+                    market: 'BTC-USD',
+                    date: currentDate,
+                    orderType: selectedOrderType,
+                    status: 'Unfilled'
+                }
+                props.setLimitOrders([...limitOrders, newLimitOrder]);
+                setSelectedForm('openOrders')
+            }
     }
 
   return (

@@ -15,6 +15,7 @@ const CoinbaseProTradingGame = (props) => {
   const [tradeHistory, setTradeHistory] = useState([]);
   const [portfolioHistory, setPortfolioHistory] = useState([]);
   const [limitOrders, setLimitOrders] = useState([]);
+  const [selectedForm, setSelectedForm] = useState('closedOrders');
 
   useEffect(() => {
     // Update portfolioHoldingsUsdValue when bitcoinPrice changes
@@ -51,10 +52,12 @@ const CoinbaseProTradingGame = (props) => {
         setPortfolioHistory={setPortfolioHistory}
         limitOrders={limitOrders}
         setLimitOrders={setLimitOrders}
+        selectedForm={selectedForm}
+        setSelectedForm={setSelectedForm}
         />
         <TradingViewWidget />
       </div>
-      <Orders tradeHistory={tradeHistory} limitOrders={limitOrders} setLimitOrders={setLimitOrders} />
+      <Orders tradeHistory={tradeHistory} limitOrders={limitOrders} setLimitOrders={setLimitOrders} selectedForm={selectedForm} setSelectedForm={setSelectedForm} />
       {/* <p>Portfolio:</p>
       <ul>
         <li>
