@@ -14,7 +14,9 @@ const CoinbaseProTradingGame = (props) => {
   });
   const [tradeHistory, setTradeHistory] = useState([]);
   const [portfolioHistory, setPortfolioHistory] = useState([]);
-  const [limitOrders, setLimitOrders] = useState([]);
+  const [limitOrders, setLimitOrders] = useState([]); 
+  const [marginOrders, setMarginOrders] = useState([]);
+  const [liquidationPrice, setLiquidationPrice] = useState(0); 
   const [selectedForm, setSelectedForm] = useState('closedOrders');
 
   useEffect(() => {
@@ -52,12 +54,26 @@ const CoinbaseProTradingGame = (props) => {
         setPortfolioHistory={setPortfolioHistory}
         limitOrders={limitOrders}
         setLimitOrders={setLimitOrders}
+        marginOrders={marginOrders}
+        setMarginOrders={setMarginOrders}
+        liquidationPrice={liquidationPrice}
+        setLiquidationPrice={setLiquidationPrice}
         selectedForm={selectedForm}
         setSelectedForm={setSelectedForm}
-        />
-        <TradingViewWidget />
+      />
+      <TradingViewWidget />
       </div>
-      <Orders tradeHistory={tradeHistory} limitOrders={limitOrders} setLimitOrders={setLimitOrders} selectedForm={selectedForm} setSelectedForm={setSelectedForm} />
+      <Orders 
+        tradeHistory={tradeHistory} 
+        limitOrders={limitOrders}  
+        setLimitOrders={setLimitOrders} 
+        selectedForm={selectedForm} 
+        setSelectedForm={setSelectedForm}  
+        marginOrders={marginOrders} 
+        setMarginOrders={setMarginOrders} 
+        liquidationPrice={liquidationPrice} 
+        setLiquidationPrice={setLiquidationPrice} 
+      />
       {/* <p>Portfolio:</p>
       <ul>
         <li>

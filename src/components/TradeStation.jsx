@@ -6,6 +6,10 @@ function TradeStation(props) {
     const limitOrders = props.limitOrders
     const setLimitOrders = props.setLimitOrders
     const setSelectedForm = props.setSelectedForm
+    const marginOrders = props.marginOrders
+    const setMarginOrders = props.setMarginOrders
+    // const liquidationPrice = props.liquidationPrice
+    const setLiquidationPrice = props.setLiquidationPrice
 
     const [spot, setSpot] = useState(true)
     const [margin, setMargin] = useState(false)
@@ -16,7 +20,7 @@ function TradeStation(props) {
     const [total, setTotal] = useState(0)
     const tradePrice = useRef(0)
     const tradeQuantity = useRef(0)
-    const [selectedMargin, setSelectedMargin] = useState(1)
+    const [selectedMargin, setSelectedMargin] = useState(2)
 
 
     useEffect(() => {
@@ -118,7 +122,7 @@ function TradeStation(props) {
         return new Promise((resolve) => {
           setTimeout(() => {
             resolve(order);
-          }, 100); // Simulating a delay of 1 second
+          }, 100); // Simulating a delay of 0.1 second
         });
       }, [props]);
 
@@ -165,10 +169,9 @@ function TradeStation(props) {
     
         if (spot) {
             spotBuy()
+        } else if (margin) {
+            marginBuy()
         }
-        // } else if (margin) {
-        //     marginBuy()
-        // }
         
     }
 
@@ -354,8 +357,62 @@ function TradeStation(props) {
             }
     }
 
+    function calculateLiquidationPrice(orderType, entryPrice, leverage, amount, balance) {
+        const numEntryPrice = parseFloat(entryPrice);
+        const numLeverage = parseFloat(leverage);
+        const numAmount = parseFloat(amount);
+        const numBalance = parseFloat(balance);
+    
+        if (orderType === 'Buy') {
+            return numEntryPrice * (1 - (1 / numLeverage)) - (numBalance / (numAmount * numEntryPrice) * (1 / numLeverage));
+        } else if (orderType === 'Sell') {
+            return numEntryPrice * (1 + (1 / numLeverage)) + (numBalance / (numAmount * numEntryPrice) * (1 / numLeverage));
+        }
+        return null;
+    }
+    
+    
+
+    const marginBuy = () => {
+        
+        let cash = props.cash; // User's cash
+        let btcPrice = props.bitcoinPrice; // Current BTC price
+        let btcAmountToBuy = parseFloat(tradeQuantity.current.value); // Quantity to buy
+        let leverage = selectedMargin; // Selected leverage
+        let buyingPower = cash * leverage; // Total buying power
+        let usdCost = btcPrice * btcAmountToBuy; // Cost in USD
+
+        if (btcAmountToBuy === 0 || btcAmountToBuy === '') {
+            alert('Please enter a quantity');
+            return;
+        }
+        if (usdCost > buyingPower) {
+            alert('Not enough buying power');
+            return;
+        }
+
+        let newCashBalance = cash - (usdCost / leverage);
+        let newLiquidationPrice = calculateLiquidationPrice('Buy', btcPrice, leverage, btcAmountToBuy, newCashBalance);
+
+        setLiquidationPrice(newLiquidationPrice);
+        props.setCash(newCashBalance);
+        setMarginOrders([...marginOrders, {
+            isOpen: true,
+            type: 'Long',
+            amount: btcAmountToBuy,
+            entryPrice: btcPrice,
+            market: 'BTC-USD',
+            leverage: leverage,
+            stopLoss: 0,
+            takeProfit: 0,
+            liquidationPrice: newLiquidationPrice,
+        }]);
+        setSelectedForm('position');
+        console.log(marginOrders);
+    }
+
   return (
-    <div className='glass w-full lg:w-1/4 py-3 px-4 flex flex-col gap-4 box-border'>
+    <div className='glass w-full lg:w-1/4 py-3 px-4 flex flex-col gap-4 box-border select-none'>
         <div className='flex justify-between items-center '>
             <p className='text-2xl'>Trade</p>
             <p className='text-2xl'>BTC-USD</p>
@@ -472,7 +529,7 @@ function TradeStation(props) {
                     ${buy ? '[&::-webkit-slider-runnable-track]:bg-[#175530c5]' : '[&::-webkit-slider-runnable-track]:bg-[#bd424071]'}
                     
                     [&::-webkit-slider-runnable-track]:rounded-full`} 
-                    id="min-and-max-range-slider-usage" min="1" max="100" step="1" value={selectedMargin} onChange={(e) => {setSelectedMargin(e.target.value)}} >
+                    id="min-and-max-range-slider-usage" min="2" max="100" step="1" value={selectedMargin} onChange={(e) => {setSelectedMargin(e.target.value)}} >
                         
                 </input>
                 <div
