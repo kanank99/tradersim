@@ -21,13 +21,23 @@ function TradeStation(props) {
     const tradePrice = useRef(0)
     const tradeQuantity = useRef(0)
     const [selectedMargin, setSelectedMargin] = useState(2)
+    const [buyingPower, setBuyingPower] = useState(selectedMargin * props.cash)
 
+    useEffect(() => {
+        // Update buying power when cash or selectedMargin changes
+        let buyingPower = (selectedMargin * props.cash).toFixed(2)
+        buyingPower = buyingPower.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        setBuyingPower(buyingPower)
+    }, [props.cash, selectedMargin]);
 
     useEffect(() => {
         // Update total when tradePrice or tradeQuantity changes
-        // fixed to 2 decimal places
-        setTotal((tradePrice.current.value * tradeQuantity.current.value).toFixed(2))
-    }, [tradePrice.current.value, tradeQuantity.current.value]);
+        if (spot) {
+            setTotal((tradePrice.current.value * tradeQuantity.current.value).toFixed(2))
+        } else if (margin) {
+            setTotal((tradeQuantity.current.value / tradePrice.current.value).toFixed(8))
+        }
+    }, [tradePrice.current.value, tradeQuantity.current.value, margin, spot]);
 
     const executeLimitOrder = useCallback(async (order) => {
         // Implement the logic for executing the limit order
@@ -377,21 +387,22 @@ function TradeStation(props) {
         
         let cash = props.cash; // User's cash
         let btcPrice = props.bitcoinPrice; // Current BTC price
-        let btcAmountToBuy = parseFloat(tradeQuantity.current.value); // Quantity to buy
+        let usdAmountToBuy = parseFloat(tradeQuantity.current.value); // Quantity to buy
         let leverage = selectedMargin; // Selected leverage
         let buyingPower = cash * leverage; // Total buying power
-        let usdCost = btcPrice * btcAmountToBuy; // Cost in USD
+        let btcAmountToBuy = usdAmountToBuy / btcPrice; // Quantity to buy in BTC
+        let btcAmountToBuyToFixed = btcAmountToBuy.toFixed(6); // Quantity to buy in BTC rounded to 6 decimal places
 
         if (btcAmountToBuy === 0 || btcAmountToBuy === '') {
             alert('Please enter a quantity');
             return;
         }
-        if (usdCost > buyingPower) {
+        if (usdAmountToBuy > buyingPower) {
             alert('Not enough buying power');
             return;
         }
 
-        let newCashBalance = cash - (usdCost / leverage);
+        let newCashBalance = cash - (usdAmountToBuy / leverage);
         let newLiquidationPrice = calculateLiquidationPrice('Buy', btcPrice, leverage, btcAmountToBuy, newCashBalance);
 
         setLiquidationPrice(newLiquidationPrice);
@@ -399,13 +410,14 @@ function TradeStation(props) {
         setMarginOrders([...marginOrders, {
             isOpen: true,
             type: 'Long',
-            amount: btcAmountToBuy,
+            amount: usdAmountToBuy,
             entryPrice: btcPrice,
             market: 'BTC-USD',
             leverage: leverage,
             stopLoss: 0,
             takeProfit: 0,
             liquidationPrice: newLiquidationPrice,
+            quantity: btcAmountToBuyToFixed,
         }]);
         setSelectedForm('position');
         console.log(marginOrders);
@@ -481,7 +493,7 @@ function TradeStation(props) {
                 </div>
             </div>
         </div>
-        {//order quantity in BTC
+        {//order quantity in BTC or USD
         }
         <div className="flex gap-4">
             <div className="py-1 px-5 glass border-transparent rounded-lg focus:ring-[#3578ff]">
@@ -491,7 +503,7 @@ function TradeStation(props) {
                         <input className="p-0 bg-transparent border-0 text-white outline-none border-none w-full" type="number" placeholder='0.01' data-hs-input-number-input ref={tradeQuantity} />
                     </div>
                     <div className="flex justify-end items-center gap-x-1.5">
-                        <p className=''>BTC</p>
+                        {margin ? <p className=''>USD</p> : <p className=''>BTC</p>}
                     </div>
                 </div>
             </div>
@@ -502,7 +514,7 @@ function TradeStation(props) {
                         <input className="p-0 bg-transparent border-0 text-white outline-none border-none w-full" type="number" value={total} readOnly data-hs-input-number-input />
                     </div>
                     <div className="flex justify-end items-center gap-x-1.5">
-                        <p className=''>USD</p>
+                        {margin ? <p className=''>BTC</p> : <p className=''>USD</p>}
                     </div>
                 </div>
             </div>
@@ -510,51 +522,59 @@ function TradeStation(props) {
         {//leverage slider
         }
         { margin ?
-        <div className='flex flex-col'>
-            <p className='text-[#ffffffb3]'>Margin</p>
-            <div className='relative'>
-                <input type="range" className={`w-full bg-transparent cursor-pointer appearance-none disabled:opacity-50 disabled:pointer-events-none focus:outline-none
-                    [&::-webkit-slider-thumb]:w-3
-                    [&::-webkit-slider-thumb]:h-3
-                    [&::-webkit-slider-thumb]:-mt-0.5
-                    [&::-webkit-slider-thumb]:appearance-none
-                    ${buy ? '[&::-webkit-slider-thumb]:bg-[#35DF8D]' : '[&::-webkit-slider-thumb]:bg-[#ff5454]'}
-                    [&::-webkit-slider-thumb]:rounded-full
-                    [&::-webkit-slider-thumb]:transition-all
-                    [&::-webkit-slider-thumb]:duration-150
-                    [&::-webkit-slider-thumb]:ease-in-out
-                    
-                    [&::-webkit-slider-runnable-track]:w-full
-                    [&::-webkit-slider-runnable-track]:h-2
-                    ${buy ? '[&::-webkit-slider-runnable-track]:bg-[#175530c5]' : '[&::-webkit-slider-runnable-track]:bg-[#bd424071]'}
-                    
-                    [&::-webkit-slider-runnable-track]:rounded-full`} 
-                    id="min-and-max-range-slider-usage" min="2" max="100" step="1" value={selectedMargin} onChange={(e) => {setSelectedMargin(e.target.value)}} >
+        <>
+            <div className='flex flex-col'>
+                <p className='text-[#ffffffb3]'>Margin</p>
+                <div className='relative'>
+                    <input type="range" className={`w-full bg-transparent cursor-pointer appearance-none disabled:opacity-50 disabled:pointer-events-none focus:outline-none
+                        [&::-webkit-slider-thumb]:w-3
+                        [&::-webkit-slider-thumb]:h-3
+                        [&::-webkit-slider-thumb]:-mt-0.5
+                        [&::-webkit-slider-thumb]:appearance-none
+                        ${buy ? '[&::-webkit-slider-thumb]:bg-[#35DF8D]' : '[&::-webkit-slider-thumb]:bg-[#ff5454]'}
+                        [&::-webkit-slider-thumb]:rounded-full
+                        [&::-webkit-slider-thumb]:transition-all
+                        [&::-webkit-slider-thumb]:duration-150
+                        [&::-webkit-slider-thumb]:ease-in-out
                         
-                </input>
-                <div
-                    className="absolute"
-                    style={{
-                    top: '32px',
-                    left: thumbPosition,
-                    transform: 'translateY(-50%)',
-                    }}
-                >{selectedMargin}x</div>
+                        [&::-webkit-slider-runnable-track]:w-full
+                        [&::-webkit-slider-runnable-track]:h-2
+                        ${buy ? '[&::-webkit-slider-runnable-track]:bg-[#175530c5]' : '[&::-webkit-slider-runnable-track]:bg-[#bd424071]'}
+                        
+                        [&::-webkit-slider-runnable-track]:rounded-full`} 
+                        id="min-and-max-range-slider-usage" min="2" max="100" step="1" value={selectedMargin} onChange={(e) => {setSelectedMargin(e.target.value)}} >
+                            
+                    </input>
+                    <div
+                        className="absolute"
+                        style={{
+                        top: '32px',
+                        left: thumbPosition,
+                        transform: 'translateY(-50%)',
+                        }}
+                    >{selectedMargin}x</div>
+                </div>
             </div>
-        </div>
+            <div className='flex justify-between items-center text-[#ffffffb3]'>
+                <p className='text-sm'>Buying Power</p>
+
+                <p className='text-sm'><span className='text-white'>{buyingPower}</span> USD</p>
+
+            </div>
+        </>
         : null}
-        <div className='flex justify-between items-center mt-3 text-[#ffffffb3]'>
-            <p className='text-md'>Available Balance</p>
+        <div className='flex justify-between items-center text-[#ffffffb3]'>
+            <p className='text-sm'>Available Balance</p>
             {//if buy, show cash, else show btc
             buy ?
-            <p className='text-md'><span className='text-white'>{props.cash}</span> USD</p>
+                <p className='text-sm'><span className='text-white'>{props.cash}</span> USD</p>
             :
-            <p className='text-md'><span className='text-white'>{props.portfolioHoldings.btcAmount}</span> BTC</p>
+                <p className='text-sm'><span className='text-white'>{props.portfolioHoldings.btcAmount}</span> BTC</p>
             }
         </div>
         <div className='flex justify-between items-center  text-[#ffffffb3]'>
-            <p className='text-md'>Estimated Cost</p>
-            <p className='text-md'><span className='text-white'>{total}</span> USD</p>
+            <p className='text-sm'>Estimated Cost</p>
+            <p className='text-sm'><span className='text-white'>{total}</span> USD</p>
         </div>
         {//place order button
         buy ?

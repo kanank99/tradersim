@@ -177,10 +177,10 @@ function Orders(props) {
               <p className='text-[#ffffffb3] uppercase font-thin text-sm'>Lq.Price</p>
             </div>
             <div className=''>
-              <p className='text-[#ffffffb3] uppercase font-thin text-sm'>Type</p>
+              <p className='text-[#ffffffb3] uppercase font-thin text-sm'>Quantity</p>
             </div>
             <div className=''>
-              <p className='text-[#ffffffb3] uppercase font-thin text-sm'>Quantity</p>
+              <p className='text-[#ffffffb3] uppercase font-thin text-sm'>Close Trade</p>
             </div>
           </div>
           <div className='flex flex-col'>
@@ -192,25 +192,25 @@ function Orders(props) {
                 return (
                   <div className='flex gap-2 justify-between px-4 text-center text-sm p-2 hover:bg-[#504d4d]'>
                     <div className=''>
-                      <p className='text-[#ffffff] w-[70px] text-left'>{order.market}</p>
+                      <p className='text-[#ffffff] w-[70px]'>{order.market}</p>
                     </div>
                     <div className=''>
-                      <p className='text-[#ffffff] w-[70px] text-right'>{Number(order.entryPrice).toFixed(2)}<span className='text-[#ffffffb3]'>USD</span></p>
+                      <p className='text-[#ffffff] w-[70px]'>{Number(order.entryPrice).toFixed(2)}<span className='text-[#ffffffb3]'>USD</span></p>
                     </div>
                     <div className=''>
                       <p className={`text-[#ffffff] w-[40px] ${order.type === 'Long' ? 'text-green-500' : 'text-red-500'} text-right`}>{order.type}</p>
                     </div>
                     <div className=''>
-                      <p className='text-[#ffffff] w-[70px] text-right'>{order.leverage}x</p>
+                      <p className='text-[#ffffff] w-[70px]'>{order.leverage}x</p>
                     </div>
                     <div className=''>
-                      <p className='text-[#ffcc00] w-[70px] text-right'>{Number(order.liquidationPrice).toFixed(2)}<span className='text-[#ffffffb3]'>USD</span></p>
+                      <p className='text-[#ffcc00] w-[70px]'>{Number(order.liquidationPrice).toFixed(2)}<span className='text-[#ffffffb3]'>USD</span></p>
                     </div>
                     <div className=''>
-                      <p className='text-[#ffffff] w-[70px] text-right'>{order.orderType}</p>
+                      <p className='text-[#ffffff] w-[70px]'>{order.quantity}<span className='text-[#ffffffb3]'>{coinSymbol}</span></p>
                     </div>
                     <div className=''>
-                      <p className='text-[#ffffff] w-[70px] text-right'>{order.quantity}<span className='text-[#ffffffb3]'>{coinSymbol}</span></p>
+                      <button className='text-[#ffffff] w-[70px]'>Close</button>
                     </div>
                   </div>
                 )
