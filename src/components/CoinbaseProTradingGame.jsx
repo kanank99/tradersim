@@ -75,6 +75,7 @@ const CoinbaseProTradingGame = (props) => {
         setMarginOrders={setMarginOrders}
         liquidationPrice={liquidationPrice}
         setLiquidationPrice={setLiquidationPrice}
+        bitcoinPrice={props.bitcoinPrice}
       />
       {/* <p>Portfolio:</p>
       <ul>

@@ -478,6 +478,16 @@ function TradeStation(props) {
     checkForLiquidation,
   ]);
 
+  const calculateProfitLoss = (
+    quantity,
+    entryPrice,
+    leverage,
+    currentMarketPrice
+  ) => {
+    let profitLoss = (currentMarketPrice - entryPrice) * quantity * leverage;
+    return profitLoss;
+  };
+
   const marginBuy = () => {
     let cash = props.cash; // User's cash
     let btcPrice = props.bitcoinPrice; // Current BTC price
@@ -521,6 +531,12 @@ function TradeStation(props) {
         takeProfit: 0,
         liquidationPrice: newLiquidationPrice,
         quantity: quantityWithLeverage,
+        profitLoss: calculateProfitLoss(
+          quantityWithLeverage,
+          btcPrice,
+          leverage,
+          btcPrice
+        ),
         closedPrice: null,
       },
     ]);
