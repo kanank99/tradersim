@@ -387,15 +387,9 @@ function TradeStation(props) {
       let profitLoss = 0;
 
       if (order.type === "Long") {
-        profitLoss =
-          (liquidationPrice - order.entryPrice) *
-          order.quantity *
-          order.leverage;
+        profitLoss = (liquidationPrice - order.entryPrice) * order.quantity;
       } else if (order.type === "Short") {
-        profitLoss =
-          (order.entryPrice - liquidationPrice) *
-          order.quantity *
-          order.leverage;
+        profitLoss = (order.entryPrice - liquidationPrice) * order.quantity;
       }
 
       // Update account balance
@@ -422,21 +416,19 @@ function TradeStation(props) {
     if (marginOrders.length > 0) {
       // Create a Promise for each margin order
       const marginOrderPromises = marginOrders.map(async (order) => {
-        let profitLoss =
-          (currentMarketPrice - order.entryPrice) *
-          order.quantity *
-          order.leverage;
-        console.log(
-          "P&L: " + profitLoss,
-          "CurrentPrice: " + currentMarketPrice,
-          "order quantity: " + order.quantity,
-          "order entry price: " + order.entryPrice,
-          "leverage: " + order.leverage,
-          "btcPercentageChange: " +
-            ((currentMarketPrice - order.entryPrice) / order.entryPrice) * 100 +
-            "%",
-          "btcPriceChange: " + (currentMarketPrice - order.entryPrice)
-        );
+        // let profitLoss =
+        //   (currentMarketPrice - order.entryPrice) * order.quantity;
+        // console.log(
+        //   "P&L: " + profitLoss,
+        //   "CurrentPrice: " + currentMarketPrice,
+        //   "order quantity: " + order.quantity,
+        //   "order entry price: " + order.entryPrice,
+        //   "leverage: " + order.leverage,
+        //   "btcPercentageChange: " +
+        //     ((currentMarketPrice - order.entryPrice) / order.entryPrice) * 100 +
+        //     "%",
+        //   "btcPriceChange: " + (currentMarketPrice - order.entryPrice)
+        // );
         if (order.isOpen) {
           if (
             (order.type === "Long" &&
@@ -478,16 +470,6 @@ function TradeStation(props) {
     checkForLiquidation,
   ]);
 
-  const calculateProfitLoss = (
-    quantity,
-    entryPrice,
-    leverage,
-    currentMarketPrice
-  ) => {
-    let profitLoss = (currentMarketPrice - entryPrice) * quantity * leverage;
-    return profitLoss;
-  };
-
   const marginBuy = () => {
     let cash = props.cash; // User's cash
     let btcPrice = props.bitcoinPrice; // Current BTC price
@@ -506,7 +488,7 @@ function TradeStation(props) {
       return;
     }
 
-    let newCashBalance = cash - usdAmountToBuy;
+    let newCashBalance = Number(cash - usdAmountToBuy).toFixed(2);
     let newLiquidationPrice = calculateLiquidationPrice(
       "Buy",
       btcPrice,
@@ -531,12 +513,6 @@ function TradeStation(props) {
         takeProfit: 0,
         liquidationPrice: newLiquidationPrice,
         quantity: quantityWithLeverage,
-        profitLoss: calculateProfitLoss(
-          quantityWithLeverage,
-          btcPrice,
-          leverage,
-          btcPrice
-        ),
         closedPrice: null,
       },
     ]);

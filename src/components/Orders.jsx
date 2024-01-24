@@ -32,14 +32,10 @@ function Orders(props) {
       let updatedPnL = 0;
       if (position.type === "Long") {
         updatedPnL =
-          (currentMarketPrice - position.entryPrice) *
-          position.quantity *
-          position.leverage;
+          (currentMarketPrice - position.entryPrice) * position.quantity;
       } else if (position.type === "Short") {
         updatedPnL =
-          (position.entryPrice - currentMarketPrice) *
-          position.quantity *
-          position.leverage;
+          (position.entryPrice - currentMarketPrice) * position.quantity;
       }
       return { ...position, unrealizedPL: updatedPnL };
     });
