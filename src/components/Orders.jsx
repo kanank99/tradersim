@@ -198,7 +198,7 @@ function Orders(props) {
                       <p className='text-[#ffffff] w-[70px]'>{Number(order.entryPrice).toFixed(2)}<span className='text-[#ffffffb3]'>USD</span></p>
                     </div>
                     <div className=''>
-                      <p className={`text-[#ffffff] w-[40px] ${order.type === 'Long' ? 'text-green-500' : 'text-red-500'} text-right`}>{order.type}</p>
+                      <p className={`text-[#ffffff] ${order.type === 'Long' ? 'text-green-500' : 'text-red-500'}`}>{order.type}</p>
                     </div>
                     <div className=''>
                       <p className='text-[#ffffff] w-[70px]'>{order.leverage}x</p>

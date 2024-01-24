@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import CoinbaseProTradingGame from './CoinbaseProTradingGame';
-import Header from './Header';
+import React, { useEffect, useState } from "react";
+import CoinbaseProTradingGame from "./CoinbaseProTradingGame";
+import Header from "./Header";
 
 const Home = () => {
   const [bitcoinPrice, setBitcoinPrice] = useState(null);
   const [cash, setCash] = useState(1000);
 
   useEffect(() => {
-    const socket = new WebSocket('wss://ws-feed.exchange.coinbase.com');
+    const socket = new WebSocket("wss://ws-feed.exchange.coinbase.com");
 
     socket.onopen = () => {
-      console.log('WebSocket connection opened.');
+      console.log("WebSocket connection opened.");
 
       // Subscribe to the ticker channel for BTC-USD
       const subscribeMessage = {
-        type: 'subscribe',
-        product_ids: ['BTC-USD'],
-        channels: ['ticker']
+        type: "subscribe",
+        product_ids: ["BTC-USD"],
+        channels: ["ticker"],
       };
       socket.send(JSON.stringify(subscribeMessage));
     };
@@ -24,14 +24,14 @@ const Home = () => {
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
-      if (data.type === 'ticker' && data.product_id === 'BTC-USD') {
+      if (data.type === "ticker" && data.product_id === "BTC-USD") {
         const { price } = data;
         setBitcoinPrice(price);
       }
     };
 
     socket.onclose = () => {
-      console.log('WebSocket connection closed.');
+      console.log("WebSocket connection closed.");
     };
 
     return () => {
@@ -41,15 +41,13 @@ const Home = () => {
   }, []);
 
   return (
-    <div className='h-full'>
+    <div className="h-full">
       <Header cash={cash} />
-      <CoinbaseProTradingGame 
+      <CoinbaseProTradingGame
         bitcoinPrice={bitcoinPrice}
         cash={cash}
         setCash={setCash}
       />
-      
-      
     </div>
   );
 };
