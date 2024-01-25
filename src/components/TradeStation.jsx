@@ -11,16 +11,16 @@ function TradeStation(props) {
   const setLiquidationPrice = props.setLiquidationPrice;
   const { bitcoinPrice, cash, setCash } = props;
 
-  const [spot, setSpot] = useState(true);
-  const [margin, setMargin] = useState(false);
+  const [spot, setSpot] = useState(false);
+  const [margin, setMargin] = useState(true);
   const [buy, setBuy] = useState(true);
   const [sell, setSell] = useState(false);
   const [dropdown, setDropdown] = useState(false);
-  const [selectedOrderType, setSelectedOrderType] = useState("Limit");
+  const [selectedOrderType, setSelectedOrderType] = useState("Market");
   const [total, setTotal] = useState(0);
   const tradePrice = useRef(0);
   const tradeQuantity = useRef(0);
-  const [selectedMargin, setSelectedMargin] = useState(2);
+  const [selectedMargin, setSelectedMargin] = useState(100);
 
   useEffect(() => {
     // Update total when tradePrice or tradeQuantity changes
@@ -79,6 +79,7 @@ function TradeStation(props) {
         });
         props.setCash(newCashBalance);
         props.setPortfolioHoldings(newPortfolioHoldings);
+        props.setEquity((Number(props.equity) - Number(usdCost)).toFixed(2));
         props.setPortfolioHistory(newPortfolioHistory);
         props.setTradeHistory(newTradeHistory);
         console.log(props.tradeHistory);
@@ -119,6 +120,7 @@ function TradeStation(props) {
           date: currentDate,
         });
         props.setCash(newCashBalance);
+        props.setEquity((Number(props.equity) + Number(usdCost)).toFixed(2));
         props.setPortfolioHoldings(newPortfolioHoldings);
         props.setPortfolioHistory(newPortfolioHistory);
         props.setTradeHistory(newTradeHistory);
@@ -231,6 +233,7 @@ function TradeStation(props) {
         quantity: btcAmountToBuy,
         value: usdCost,
         orderType: selectedOrderType,
+        tradeType: "Spot",
         date: currentDate,
       });
       props.setCash(newCashBalance);
@@ -262,6 +265,7 @@ function TradeStation(props) {
         market: "BTC-USD",
         date: currentDate,
         orderType: selectedOrderType,
+        tradeType: "Spot",
         status: "Unfilled",
       };
       props.setLimitOrders([...limitOrders, newLimitOrder]);
@@ -316,6 +320,7 @@ function TradeStation(props) {
         quantity: btcAmountToSell,
         value: usdCost,
         orderType: selectedOrderType,
+        tradeType: "Spot",
         date: currentDate,
       });
       props.setCash(newCashBalance);
@@ -347,6 +352,7 @@ function TradeStation(props) {
         market: "BTC-USD",
         date: currentDate,
         orderType: selectedOrderType,
+        tradeType: "Spot",
         status: "Unfilled",
       };
       props.setLimitOrders([...limitOrders, newLimitOrder]);
@@ -393,7 +399,7 @@ function TradeStation(props) {
       }
 
       // Update account balance
-      let updatedBalance = cash + profitLoss;
+      let updatedBalance = Number(cash + profitLoss);
 
       // Update order information
       let updatedOrder = {
@@ -474,12 +480,13 @@ function TradeStation(props) {
     let cash = props.cash; // User's cash
     let btcPrice = props.bitcoinPrice; // Current BTC price
     let usdAmountToBuy = parseFloat(tradeQuantity.current.value); // Quantity to buy
+    let usdAmountToBuyValidation = tradeQuantity.current.value; // Quantity to buy for validation
     let leverage = selectedMargin; // Selected leverage
     let btcAmountToBuy = usdAmountToBuy / btcPrice; // Quantity to buy in BTC
     let btcAmountToBuyToFixed = btcAmountToBuy.toFixed(6); // Quantity to buy in BTC rounded to 6 decimal places
     let quantityWithLeverage = btcAmountToBuyToFixed * leverage; // Quantity to buy in BTC with leverage
 
-    if (btcAmountToBuy === 0 || btcAmountToBuy === "") {
+    if (usdAmountToBuyValidation === 0 || usdAmountToBuyValidation === "") {
       alert("Please enter a quantity");
       return;
     }
@@ -502,6 +509,8 @@ function TradeStation(props) {
     setMarginOrders([
       ...marginOrders,
       {
+        id: marginOrders.length + 1,
+        tradeType: "Margin",
         isOpen: true,
         status: "open",
         type: "Long",

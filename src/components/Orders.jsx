@@ -5,6 +5,9 @@ function Orders(props) {
   const [orders, setOrders] = useState([]);
   const [openOrders, setOpenOrders] = useState([]);
   const [positions, setPositions] = useState([]);
+  const [memoizedPositions, setMemoizedPositions] = useState([]);
+  const [previousTotalPnL, setPreviousTotalPnL] = useState(0);
+
   // const closedOrders = orders.filter(order => order.status === 'closed')
   // const openOrders = orders.filter(order => order.status === 'open')
   // const fills = orders.filter(order => order.status === 'filled')
@@ -13,6 +16,10 @@ function Orders(props) {
   const selectedForm = props.selectedForm;
   const setSelectedForm = props.setSelectedForm;
   const currentMarketPrice = props.bitcoinPrice;
+  const cash = props.cash;
+  const setCash = props.setCash;
+  const equity = props.equity;
+  const setEquity = props.setEquity;
 
   useEffect(() => {
     setOrders(props.tradeHistory);
@@ -41,13 +48,64 @@ function Orders(props) {
     });
   }, [currentMarketPrice, positions]);
 
-  const [memoizedPositions, setMemoizedPositions] = useState(updatedPositions);
-
   useEffect(() => {
     setMemoizedPositions(updatedPositions);
   }, [updatedPositions]);
 
-  // const updateAllPositionsPnL = () => {
+  useEffect(() => {
+    const newTotalUnrealizedPL = memoizedPositions.reduce(
+      (total, position) => total + position.unrealizedPL,
+      0
+    );
+
+    const pnlChange = newTotalUnrealizedPL - previousTotalPnL;
+    setEquity((prevEquity) => (Number(prevEquity) + pnlChange).toFixed(2));
+    setPreviousTotalPnL(newTotalUnrealizedPL);
+  }, [memoizedPositions, setEquity, previousTotalPnL]);
+
+  const executeClosePosition = (position) => {
+    setEquity((Number(equity) + Number(position.unrealizedPL)).toFixed(2));
+    setCash(
+      (
+        Number(cash) +
+        Number(position.amount) +
+        Number(position.unrealizedPL)
+      ).toFixed(2)
+    );
+    // setEquity((Number(equity) + Number(position.unrealizedPL)).toFixed(2));
+
+    console.log(equity);
+
+    const updatedPositions = positions.filter((pos) => pos.id !== position.id);
+    setPositions(updatedPositions);
+    props.setMarginOrders(updatedPositions);
+    setOrders([
+      ...orders,
+      {
+        id: orders.length + 1,
+        market: position.market,
+        type: position.type,
+        tradeType: position.tradeType,
+        orderType: "Market",
+        price: currentMarketPrice,
+        quantity: position.quantity,
+        isOpen: false,
+      },
+    ]);
+    props.setTradeHistory([
+      ...orders,
+      {
+        id: orders.length + 1,
+        market: position.market,
+        type: position.type,
+        tradeType: position.tradeType,
+        orderType: "Market",
+        price: currentMarketPrice,
+        quantity: position.quantity,
+        isOpen: false,
+      },
+    ]);
+  };
 
   return (
     <div className="glass w-full h-full my-[20px]">
@@ -110,6 +168,11 @@ function Orders(props) {
             </div>
             <div className="">
               <p className="text-[#ffffffb3] uppercase font-thin text-sm">
+                Trade Type
+              </p>
+            </div>
+            <div className="">
+              <p className="text-[#ffffffb3] uppercase font-thin text-sm">
                 Side
               </p>
             </div>
@@ -139,6 +202,11 @@ function Orders(props) {
                     <div className="">
                       <p className="text-[#ffffff] w-[70px] text-left">
                         {order.market}
+                      </p>
+                    </div>
+                    <div className="">
+                      <p className="text-[#ffffff] w-[40px] text-right">
+                        {order.tradeType}
                       </p>
                     </div>
                     <div className="">
@@ -316,12 +384,11 @@ function Orders(props) {
                 return (
                   <div className="flex gap-2 justify-between px-4 text-center text-sm p-2 hover:bg-[#504d4d]">
                     <div className="">
-                      <p className="text-[#ffffff] w-[70px]">{order.market}</p>
+                      <p className="text-[#ffffff]">{order.market}</p>
                     </div>
                     <div className="">
-                      <p className="text-[#ffffff] w-[70px]">
+                      <p className="text-[#ffffff]">
                         {Number(order.entryPrice).toFixed(2)}
-                        <span className="text-[#ffffffb3]">USD</span>
                       </p>
                     </div>
                     <div className="">
@@ -336,30 +403,37 @@ function Orders(props) {
                       </p>
                     </div>
                     <div className="">
-                      <p className="text-[#ffffff] w-[70px]">
-                        {order.leverage}x
-                      </p>
+                      <p className="text-[#ffffff]">{order.leverage}x</p>
                     </div>
                     <div className="">
-                      <p className="text-[#ffffff] w-[70px]">
+                      <p
+                        className={`${
+                          order.unrealizedPL > 0
+                            ? "text-green-500"
+                            : "text-red-500"
+                        } text-[#ffffff] w-[70px]`}
+                      >
                         {Number(order.unrealizedPL).toFixed(2)}
-                        <span className="text-[#ffffffb3]">USD</span>
                       </p>
                     </div>
                     <div className="">
-                      <p className="text-[#ffcc00] w-[70px]">
+                      <p className="text-[#ffcc00]">
                         {Number(order.liquidationPrice).toFixed(2)}
-                        <span className="text-[#ffffffb3]">USD</span>
                       </p>
                     </div>
                     <div className="">
-                      <p className="text-[#ffffff] w-[70px]">
+                      <p className="text-[#ffffff]">
                         {Number(order.quantity).toFixed(6)}
                         <span className="text-[#ffffffb3]">{coinSymbol}</span>
                       </p>
                     </div>
                     <div className="">
-                      <button className="text-[#ffffff] w-[70px]">Close</button>
+                      <button
+                        className="text-[#ffffff]"
+                        onClick={() => executeClosePosition(order, cash)}
+                      >
+                        Close
+                      </button>
                     </div>
                   </div>
                 );

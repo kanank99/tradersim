@@ -5,6 +5,7 @@ import Header from "./Header";
 const Home = () => {
   const [bitcoinPrice, setBitcoinPrice] = useState(null);
   const [cash, setCash] = useState(1000);
+  const [equity, setEquity] = useState(cash);
 
   useEffect(() => {
     const socket = new WebSocket("wss://ws-feed.exchange.coinbase.com");
@@ -42,11 +43,13 @@ const Home = () => {
 
   return (
     <div className="h-full">
-      <Header cash={cash} />
+      <Header cash={cash} equity={equity} />
       <CoinbaseProTradingGame
         bitcoinPrice={bitcoinPrice}
         cash={cash}
         setCash={setCash}
+        equity={equity}
+        setEquity={setEquity}
       />
     </div>
   );

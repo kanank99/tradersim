@@ -62,11 +62,14 @@ const CoinbaseProTradingGame = (props) => {
           setLiquidationPrice={setLiquidationPrice}
           selectedForm={selectedForm}
           setSelectedForm={setSelectedForm}
+          equity={props.equity}
+          setEquity={props.setEquity}
         />
         <TradingViewWidget />
       </div>
       <Orders
         tradeHistory={tradeHistory}
+        setTradeHistory={setTradeHistory}
         limitOrders={limitOrders}
         setLimitOrders={setLimitOrders}
         selectedForm={selectedForm}
@@ -76,6 +79,10 @@ const CoinbaseProTradingGame = (props) => {
         liquidationPrice={liquidationPrice}
         setLiquidationPrice={setLiquidationPrice}
         bitcoinPrice={props.bitcoinPrice}
+        cash={props.cash}
+        setCash={props.setCash}
+        equity={props.equity}
+        setEquity={props.setEquity}
       />
       {/* <p>Portfolio:</p>
       <ul>
