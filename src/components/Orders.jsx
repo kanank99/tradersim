@@ -109,7 +109,7 @@ function Orders(props) {
 
   return (
     <div className="glass w-full h-full my-[20px]">
-      <div className="flex gap-4 px-2 pt-2">
+      <div className="flex gap-5 px-2 pt-2">
         <div className="p-1 cursor-pointer select-none">
           <h1
             className={`${
@@ -160,7 +160,7 @@ function Orders(props) {
 
       {selectedForm === "closedOrders" ? (
         <div className="mt-2 ">
-          <div className="flex gap-2 justify-between px-4">
+          <div className="flex  justify-between px-4">
             <div className="">
               <p className="text-[#ffffffb3] uppercase font-thin text-sm">
                 Market
