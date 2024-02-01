@@ -52,7 +52,7 @@ body {
 /* flip card START */
 
 .flip-card-inner {
-  transition: transform 0.4s;
+  transition: transform 0.5s;
   transform-style: preserve-3d;
   position: relative;
   width: 100%;

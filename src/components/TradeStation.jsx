@@ -186,10 +186,9 @@ function TradeStation(props) {
   const Sell = () => {
     if (spot) {
       spotSell();
+    } else if (margin) {
+      marginSell();
     }
-    // } else if (margin) {
-    //     marginSell()
-    // }
   };
 
   const spotBuy = () => {
@@ -515,6 +514,58 @@ function TradeStation(props) {
         status: "open",
         type: "Long",
         amount: usdAmountToBuy,
+        entryPrice: btcPrice,
+        market: "BTC-USD",
+        leverage: leverage,
+        stopLoss: 0,
+        takeProfit: 0,
+        liquidationPrice: newLiquidationPrice,
+        quantity: quantityWithLeverage,
+        closedPrice: null,
+      },
+    ]);
+    setSelectedForm("position");
+  };
+
+  const marginSell = () => {
+    let cash = props.cash; // User's cash
+    let btcPrice = props.bitcoinPrice; // Current BTC price
+    let usdAmountToSell = parseFloat(tradeQuantity.current.value); // Quantity to sell
+    let usdAmountToSellValidation = tradeQuantity.current.value; // Quantity to sell for validation
+    let leverage = selectedMargin; // Selected leverage
+    let btcAmountToSell = usdAmountToSell / btcPrice; // Quantity to sell in BTC
+    let btcAmountToSellToFixed = btcAmountToSell.toFixed(6); // Quantity to sell in BTC rounded to 6 decimal places
+    let quantityWithLeverage = btcAmountToSellToFixed * leverage; // Quantity to sell in BTC with leverage
+
+    if (usdAmountToSellValidation === 0 || usdAmountToSellValidation === "") {
+      alert("Please enter a quantity");
+      return;
+    }
+    if (btcAmountToSell > props.portfolioHoldings.btcAmount) {
+      alert("Not enough BTC");
+      return;
+    }
+
+    let newCashBalance = Number(cash - usdAmountToSell).toFixed(2);
+    let newLiquidationPrice = calculateLiquidationPrice(
+      "Sell",
+      btcPrice,
+      leverage,
+      btcAmountToSell,
+      newCashBalance
+    );
+
+    setLiquidationPrice(newLiquidationPrice);
+    props.setCash(newCashBalance);
+    setMarginOrders([
+      ...marginOrders,
+      {
+        id: marginOrders.length + 1,
+        tradeType: "Margin",
+        isOpen: true,
+        status: "open",
+        type: "Short",
+        amount: usdAmountToSell,
         entryPrice: btcPrice,
         market: "BTC-USD",
         leverage: leverage,
