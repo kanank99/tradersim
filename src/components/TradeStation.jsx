@@ -580,7 +580,7 @@ function TradeStation(props) {
   };
 
   return (
-    <div className="glass w-full lg:w-1/4 py-3 px-4 flex flex-col gap-4 box-border select-none">
+    <div className="glass w-full lg:w-1/4 py-3 px-4 flex flex-col gap-4 box-border select-none tradingview-border">
       <div className="flex justify-between items-center ">
         <p className="text-2xl">Trade</p>
         <p className="text-2xl">BTC-USD</p>

@@ -133,3 +133,11 @@ body {
 }
 
 /* settings button END */
+
+.tradingview-border {
+  border: 1px solid #363a45;
+}
+
+.tradingview-border-bottom {
+  border-bottom: 1px solid #363a45;
+}

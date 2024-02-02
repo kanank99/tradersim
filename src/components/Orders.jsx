@@ -108,8 +108,8 @@ function Orders(props) {
   };
 
   return (
-    <div className="glass w-full h-full my-[20px]">
-      <div className="flex gap-5 px-2 pt-2">
+    <div className="glass w-full h-full my-[20px] tradingview-border">
+      <div className="flex gap-5 px-2 pt-2 bg-[#131722] rounded-tr-[10px] rounded-tl-[10px] tradingview-border-bottom">
         <div className="p-1 cursor-pointer select-none">
           <h1
             className={`${
