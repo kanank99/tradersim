@@ -580,10 +580,14 @@ function TradeStation(props) {
   };
 
   return (
-    <div className="glass w-full lg:w-1/4 py-3 px-4 flex flex-col gap-4 box-border select-none tradingview-border">
-      <div className="flex justify-between items-center ">
-        <p className="text-2xl">Trade</p>
-        <p className="text-2xl">BTC-USD</p>
+    <div
+      className={`glass w-full lg:w-1/4 py-3 px-4 flex flex-col gap-4 box-border select-none ${
+        buy ? "moving-border-green" : "moving-border-red"
+      } `}
+    >
+      <div className="flex justify-between items-center h-[38px]">
+        <p className="text-xl">Trade</p>
+        <p className="text-xl">{props.selectedCoin}</p>
       </div>
       <div className="flex w-full glass">
         <div

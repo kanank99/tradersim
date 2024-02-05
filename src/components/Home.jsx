@@ -6,6 +6,8 @@ const Home = () => {
   const [bitcoinPrice, setBitcoinPrice] = useState(null);
   const [cash, setCash] = useState(1000);
   const [equity, setEquity] = useState(cash);
+  const listOfCoins = ["BTC-USD", "ETH-USD", "XRP-USD"];
+  const [selectedCoin, setSelectedCoin] = useState(listOfCoins[0]);
 
   useEffect(() => {
     const socket = new WebSocket("wss://ws-feed.exchange.coinbase.com");
@@ -16,7 +18,7 @@ const Home = () => {
       // Subscribe to the ticker channel for BTC-USD
       const subscribeMessage = {
         type: "subscribe",
-        product_ids: ["BTC-USD"],
+        product_ids: [selectedCoin],
         channels: ["ticker"],
       };
       socket.send(JSON.stringify(subscribeMessage));
@@ -25,7 +27,7 @@ const Home = () => {
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
-      if (data.type === "ticker" && data.product_id === "BTC-USD") {
+      if (data.type === "ticker" && data.product_id === selectedCoin) {
         const { price } = data;
         setBitcoinPrice(price);
       }
@@ -39,7 +41,7 @@ const Home = () => {
       // Close the WebSocket connection when the component unmounts
       socket.close();
     };
-  }, []);
+  }, [selectedCoin]);
 
   return (
     <div className="h-full">
@@ -50,6 +52,9 @@ const Home = () => {
         setCash={setCash}
         equity={equity}
         setEquity={setEquity}
+        selectedCoin={selectedCoin}
+        setSelectedCoin={setSelectedCoin}
+        listOfCoins={listOfCoins}
       />
     </div>
   );
