@@ -9,8 +9,8 @@ import Orders from "./Orders";
 const CoinbaseProTradingGame = (props) => {
   const [portfolioHoldings, setPortfolioHoldings] = useState({
     btcAmount: 0.5,
-    ethAmount: 0,
-    xrpAmount: 0,
+    ethAmount: 0.2,
+    xrpAmount: 10430,
   });
   const [portfolioHoldingsUsdValue, setPortfolioHoldingsUsdValue] = useState({
     btcAmount: props.bitcoinPrice * portfolioHoldings.btcAmount,
@@ -165,7 +165,7 @@ const CoinbaseProTradingGame = (props) => {
           setEquity={props.setEquity}
           selectedCoin={props.selectedCoin}
         />
-        <TradingViewWidget />
+        <TradingViewWidget selectedCoin={props.selectedCoin} />
       </div>
       <Orders
         tradeHistory={tradeHistory}
@@ -183,6 +183,7 @@ const CoinbaseProTradingGame = (props) => {
         setCash={props.setCash}
         equity={props.equity}
         setEquity={props.setEquity}
+        portfolioHoldings={portfolioHoldings}
       />
       {/* <p>Portfolio:</p>
       <ul>

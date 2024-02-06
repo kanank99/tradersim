@@ -193,12 +193,21 @@ function TradeStation(props) {
 
   const spotBuy = () => {
     let cash = props.cash;
-    let btcAmountInWallet = props.portfolioHoldings.btcAmount;
-    let btcPrice = props.bitcoinPrice;
-    let btcAmountToBuy = tradeQuantity.current.value;
-    let usdCost = tradePrice.current.value * btcAmountToBuy;
+    let coinAmountInWallet;
 
-    if (btcAmountToBuy === 0 || btcAmountToBuy === "") {
+    if (props.selectedCoin === "BTC-USD") {
+      coinAmountInWallet = props.portfolioHoldings.btcAmount;
+    } else if (props.selectedCoin === "ETH-USD") {
+      coinAmountInWallet = props.portfolioHoldings.ethAmount;
+    } else if (props.selectedCoin === "XRP-USD") {
+      coinAmountInWallet = props.portfolioHoldings.xrpAmount;
+    }
+
+    let btcPrice = props.bitcoinPrice;
+    let coinAmountToBuy = tradeQuantity.current.value;
+    let usdCost = tradePrice.current.value * coinAmountToBuy;
+
+    if (coinAmountToBuy === 0 || coinAmountToBuy === "") {
       alert("Please enter a quantity");
       return;
     }
@@ -211,15 +220,42 @@ function TradeStation(props) {
 
     if (selectedOrderType === "Market") {
       let newCashBalance = (Number(cash) - Number(usdCost)).toFixed(2);
-      let newBtcAmountInWallet =
-        Number(btcAmountInWallet) + Number(btcAmountToBuy);
-      let newBtcValueInWallet = newBtcAmountInWallet * btcPrice;
-      let newPortfolioValue = newCashBalance + newBtcValueInWallet;
-      let newPortfolioHoldings = {
-        btcAmount: newBtcAmountInWallet,
-        btcValue: newBtcValueInWallet,
-        cash: newCashBalance,
-      };
+      let newCoinAmountInWallet =
+        Number(coinAmountInWallet) + Number(coinAmountToBuy);
+      let newCoinValueInWallet = newCoinAmountInWallet * btcPrice;
+      let newPortfolioValue = newCashBalance + newCoinValueInWallet;
+      let newPortfolioHoldings;
+      if (props.selectedCoin === "BTC-USD") {
+        newPortfolioHoldings = {
+          ...props.portfolioHoldings,
+          btcAmount: newCoinAmountInWallet,
+          btcValue: newCoinValueInWallet,
+          cash: newCashBalance,
+        };
+        props.setPortfolioHoldings(newPortfolioHoldings);
+      } else if (props.selectedCoin === "ETH-USD") {
+        newPortfolioHoldings = {
+          ...props.portfolioHoldings,
+          ethAmount: newCoinAmountInWallet,
+          ethValue: newCoinValueInWallet,
+          cash: newCashBalance,
+        };
+        props.setPortfolioHoldings(newPortfolioHoldings);
+      } else if (props.selectedCoin === "XRP-USD") {
+        newPortfolioHoldings = {
+          ...props.portfolioHoldings,
+          xrpAmount: newCoinAmountInWallet,
+          xrpValue: newCoinValueInWallet,
+          cash: newCashBalance,
+        };
+        props.setPortfolioHoldings(newPortfolioHoldings);
+      }
+      // let newPortfolioHoldings = {
+      //   ...props.portfolioHoldings,
+      //   btcAmount: newCoinAmountInWallet,
+      //   btcValue: newCoinValueInWallet,
+      //   cash: newCashBalance,
+      // };
       let currentDate = new Date();
       let newPortfolioHistory = props.portfolioHistory;
       newPortfolioHistory.push(newPortfolioValue);
@@ -227,9 +263,9 @@ function TradeStation(props) {
       newTradeHistory.push({
         isOpen: false,
         type: "Buy",
-        market: "BTC-USD",
+        market: props.selectedCoin,
         price: tradePrice.current.value,
-        quantity: btcAmountToBuy,
+        quantity: coinAmountToBuy,
         value: usdCost,
         orderType: selectedOrderType,
         tradeType: "Spot",

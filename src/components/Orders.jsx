@@ -443,6 +443,17 @@ function Orders(props) {
           </div>
         </div>
       ) : null}
+      {/* show portfolio */}
+      <div className="flex justify-between">
+        <p>BTC</p>
+        <p>ETH</p>
+        <p>XRP</p>
+      </div>
+      <div className="flex justify-between">
+        <p>{props.portfolioHoldings.btcAmount}</p>
+        <p>{props.portfolioHoldings.ethAmount}</p>
+        <p>{props.portfolioHoldings.xrpAmount}</p>
+      </div>
     </div>
   );
 }
