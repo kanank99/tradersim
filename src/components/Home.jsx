@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import CoinbaseProTradingGame from "./CoinbaseProTradingGame";
 import Header from "./Header";
 
-const Home = () => {
+const Home = (props) => {
   const [bitcoinPrice, setBitcoinPrice] = useState(null);
   const [cash, setCash] = useState(1000);
   const [equity, setEquity] = useState(cash);
@@ -55,6 +55,9 @@ const Home = () => {
         selectedCoin={selectedCoin}
         setSelectedCoin={setSelectedCoin}
         listOfCoins={listOfCoins}
+        realtimeBtcPrice={props.realtimeBtcPrice}
+        realtimeEthPrice={props.realtimeEthPrice}
+        realtimeXrpPrice={props.realtimeXrpPrice}
       />
     </div>
   );

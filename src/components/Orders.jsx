@@ -16,6 +16,9 @@ function Orders(props) {
   const selectedForm = props.selectedForm;
   const setSelectedForm = props.setSelectedForm;
   const currentMarketPrice = props.bitcoinPrice;
+  const currentMarketPriceBtc = props.realtimeBtcPrice;
+  const currentMarketPriceEth = props.realtimeEthPrice;
+  const currentMarketPriceXrp = props.realtimeXrpPrice;
   const cash = props.cash;
   const setCash = props.setCash;
   const equity = props.equity;
@@ -37,16 +40,39 @@ function Orders(props) {
   const updatedPositions = useMemo(() => {
     return positions.map((position) => {
       let updatedPnL = 0;
-      if (position.type === "Long") {
-        updatedPnL =
-          (currentMarketPrice - position.entryPrice) * position.quantity;
-      } else if (position.type === "Short") {
-        updatedPnL =
-          (position.entryPrice - currentMarketPrice) * position.quantity;
+      if (position.market === "BTC-USD") {
+        if (position.type === "Long") {
+          updatedPnL =
+            (currentMarketPriceBtc - position.entryPrice) * position.quantity;
+        } else if (position.type === "Short") {
+          updatedPnL =
+            (position.entryPrice - currentMarketPriceBtc) * position.quantity;
+        }
+      } else if (position.market === "ETH-USD") {
+        if (position.type === "Long") {
+          updatedPnL =
+            (currentMarketPriceEth - position.entryPrice) * position.quantity;
+        } else if (position.type === "Short") {
+          updatedPnL =
+            (position.entryPrice - currentMarketPriceEth) * position.quantity;
+        }
+      } else if (position.market === "XRP-USD") {
+        if (position.type === "Long") {
+          updatedPnL =
+            (currentMarketPriceXrp - position.entryPrice) * position.quantity;
+        } else if (position.type === "Short") {
+          updatedPnL =
+            (position.entryPrice - currentMarketPriceXrp) * position.quantity;
+        }
       }
       return { ...position, unrealizedPL: updatedPnL };
     });
-  }, [currentMarketPrice, positions]);
+  }, [
+    currentMarketPriceBtc,
+    currentMarketPriceEth,
+    currentMarketPriceXrp,
+    positions,
+  ]);
 
   useEffect(() => {
     setMemoizedPositions(updatedPositions);
@@ -388,7 +414,9 @@ function Orders(props) {
                     </div>
                     <div className="">
                       <p className="text-[#ffffff]">
-                        {Number(order.entryPrice).toFixed(2)}
+                        {order.market === "XRP-USD"
+                          ? Number(order.entryPrice)
+                          : Number(order.entryPrice).toFixed(2)}
                       </p>
                     </div>
                     <div className="">
@@ -418,7 +446,9 @@ function Orders(props) {
                     </div>
                     <div className="">
                       <p className="text-[#ffcc00]">
-                        {Number(order.liquidationPrice).toFixed(2)}
+                        {order.market === "XRP-USD"
+                          ? Number(order.liquidationPrice).toFixed(6)
+                          : Number(order.liquidationPrice).toFixed(2)}
                       </p>
                     </div>
                     <div className="">
@@ -453,6 +483,11 @@ function Orders(props) {
         <p>{props.portfolioHoldings.btcAmount}</p>
         <p>{props.portfolioHoldings.ethAmount}</p>
         <p>{props.portfolioHoldings.xrpAmount}</p>
+      </div>
+      <div className="flex justify-between">
+        <p>{props.realtimeBtcPrice}</p>
+        <p>{props.realtimeEthPrice}</p>
+        <p>{props.realtimeXrpPrice}</p>
       </div>
     </div>
   );

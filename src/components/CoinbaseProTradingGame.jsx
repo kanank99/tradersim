@@ -164,6 +164,9 @@ const CoinbaseProTradingGame = (props) => {
           equity={props.equity}
           setEquity={props.setEquity}
           selectedCoin={props.selectedCoin}
+          realtimeBtcPrice={props.realtimeBtcPrice}
+          realtimeEthPrice={props.realtimeEthPrice}
+          realtimeXrpPrice={props.realtimeXrpPrice}
         />
         <TradingViewWidget selectedCoin={props.selectedCoin} />
       </div>
@@ -184,6 +187,9 @@ const CoinbaseProTradingGame = (props) => {
         equity={props.equity}
         setEquity={props.setEquity}
         portfolioHoldings={portfolioHoldings}
+        realtimeBtcPrice={props.realtimeBtcPrice}
+        realtimeEthPrice={props.realtimeEthPrice}
+        realtimeXrpPrice={props.realtimeXrpPrice}
       />
       {/* <p>Portfolio:</p>
       <ul>

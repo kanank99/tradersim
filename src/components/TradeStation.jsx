@@ -7,9 +7,8 @@ function TradeStation(props) {
   const setSelectedForm = props.setSelectedForm;
   const marginOrders = props.marginOrders;
   const setMarginOrders = props.setMarginOrders;
-  // const liquidationPrice = props.liquidationPrice
   const setLiquidationPrice = props.setLiquidationPrice;
-  const { bitcoinPrice, cash, setCash } = props;
+  const { cash, setCash } = props;
 
   const [spot, setSpot] = useState(false);
   const [margin, setMargin] = useState(true);
@@ -220,8 +219,9 @@ function TradeStation(props) {
 
     if (selectedOrderType === "Market") {
       let newCashBalance = (Number(cash) - Number(usdCost)).toFixed(2);
-      let newCoinAmountInWallet =
-        Number(coinAmountInWallet) + Number(coinAmountToBuy);
+      let newCoinAmountInWallet = (
+        Number(coinAmountInWallet) + Number(coinAmountToBuy)
+      ).toFixed(5);
       let newCoinValueInWallet = newCoinAmountInWallet * btcPrice;
       let newPortfolioValue = newCashBalance + newCoinValueInWallet;
       let newPortfolioHoldings;
@@ -250,12 +250,6 @@ function TradeStation(props) {
         };
         props.setPortfolioHoldings(newPortfolioHoldings);
       }
-      // let newPortfolioHoldings = {
-      //   ...props.portfolioHoldings,
-      //   btcAmount: newCoinAmountInWallet,
-      //   btcValue: newCoinValueInWallet,
-      //   cash: newCashBalance,
-      // };
       let currentDate = new Date();
       let newPortfolioHistory = props.portfolioHistory;
       newPortfolioHistory.push(newPortfolioValue);
@@ -297,7 +291,7 @@ function TradeStation(props) {
         limitPrice: parseFloat(tradePrice.current.value),
         quantity: parseFloat(tradeQuantity.current.value),
         type: "Buy",
-        market: "BTC-USD",
+        market: props.selectedCoin,
         date: currentDate,
         orderType: selectedOrderType,
         tradeType: "Spot",
@@ -317,32 +311,68 @@ function TradeStation(props) {
     // update trade history
 
     let cash = props.cash;
-    let btcAmountInWallet = props.portfolioHoldings.btcAmount;
-    let btcPrice = props.bitcoinPrice;
-    let btcAmountToSell = tradeQuantity.current.value;
-    let usdCost = tradePrice.current.value * btcAmountToSell;
+    let coinAmountInWallet;
+    if (props.selectedCoin === "BTC-USD") {
+      coinAmountInWallet = props.portfolioHoldings.btcAmount;
+    } else if (props.selectedCoin === "ETH-USD") {
+      coinAmountInWallet = props.portfolioHoldings.ethAmount;
+    } else if (props.selectedCoin === "XRP-USD") {
+      coinAmountInWallet = props.portfolioHoldings.xrpAmount;
+    }
+    let coinPrice = props.bitcoinPrice;
+    let coinAmountToSell = tradeQuantity.current.value;
+    let usdCost = tradePrice.current.value * coinAmountToSell;
 
-    if (btcAmountToSell === 0 || btcAmountToSell === "") {
+    if (coinAmountToSell === 0 || coinAmountToSell === "") {
       alert("Please enter a quantity");
       return;
     }
 
-    if (btcAmountToSell > btcAmountInWallet) {
-      alert("Not enough BTC");
+    if (coinAmountToSell > coinAmountInWallet) {
+      if (props.selectedCoin === "BTC-USD") {
+        alert("Not enough BTC");
+      } else if (props.selectedCoin === "ETH-USD") {
+        alert("Not enough ETH");
+      } else if (props.selectedCoin === "XRP-USD") {
+        alert("Not enough XRP");
+      }
       return;
     }
 
     if (selectedOrderType === "Market") {
       let newCashBalance = (Number(cash) + Number(usdCost)).toFixed(2);
-      let newBtcAmountInWallet =
-        Number(btcAmountInWallet) - Number(btcAmountToSell);
-      let newBtcValueInWallet = newBtcAmountInWallet * btcPrice;
+      let newCoinAmountInWallet = (
+        Number(coinAmountInWallet) - Number(coinAmountToSell)
+      ).toFixed(5);
+      let newBtcValueInWallet = newCoinAmountInWallet * coinPrice;
       let newPortfolioValue = newCashBalance + newBtcValueInWallet;
-      let newPortfolioHoldings = {
-        btcAmount: newBtcAmountInWallet,
-        btcValue: newBtcValueInWallet,
-        cash: newCashBalance,
-      };
+      let newPortfolioHoldings;
+
+      if (props.selectedCoin === "BTC-USD") {
+        newPortfolioHoldings = {
+          ...props.portfolioHoldings,
+          btcAmount: newCoinAmountInWallet,
+          btcValue: newBtcValueInWallet,
+          cash: newCashBalance,
+        };
+        props.setPortfolioHoldings(newPortfolioHoldings);
+      } else if (props.selectedCoin === "ETH-USD") {
+        newPortfolioHoldings = {
+          ...props.portfolioHoldings,
+          ethAmount: newCoinAmountInWallet,
+          ethValue: newBtcValueInWallet,
+          cash: newCashBalance,
+        };
+        props.setPortfolioHoldings(newPortfolioHoldings);
+      } else if (props.selectedCoin === "XRP-USD") {
+        newPortfolioHoldings = {
+          ...props.portfolioHoldings,
+          xrpAmount: newCoinAmountInWallet,
+          xrpValue: newBtcValueInWallet,
+          cash: newCashBalance,
+        };
+        props.setPortfolioHoldings(newPortfolioHoldings);
+      }
       let currentDate = new Date();
       let newPortfolioHistory = props.portfolioHistory;
       newPortfolioHistory.push(newPortfolioValue);
@@ -350,9 +380,9 @@ function TradeStation(props) {
       newTradeHistory.push({
         isOpen: false,
         type: "Sell",
-        market: "BTC-USD",
+        market: props.selectedCoin,
         price: tradePrice.current.value,
-        quantity: btcAmountToSell,
+        quantity: coinAmountToSell,
         value: usdCost,
         orderType: selectedOrderType,
         tradeType: "Spot",
@@ -369,7 +399,7 @@ function TradeStation(props) {
         return;
       }
 
-      if (tradePrice.current.value < btcPrice) {
+      if (tradePrice.current.value < coinPrice) {
         alert("Limit price must be higher than current price");
         return;
       }
@@ -384,7 +414,7 @@ function TradeStation(props) {
         limitPrice: parseFloat(tradePrice.current.value),
         quantity: parseFloat(tradeQuantity.current.value),
         type: "Sell",
-        market: "BTC-USD",
+        market: props.selectedCoin,
         date: currentDate,
         orderType: selectedOrderType,
         tradeType: "Spot",
@@ -422,8 +452,7 @@ function TradeStation(props) {
   }
 
   const executeMarginOrder = useCallback(
-    async (order) => {
-      const currentMarketPrice = bitcoinPrice;
+    async (order, coinClosedPrice) => {
       const liquidationPrice = order.liquidationPrice;
       let profitLoss = 0;
 
@@ -440,7 +469,7 @@ function TradeStation(props) {
       let updatedOrder = {
         ...order,
         profitLoss: profitLoss,
-        closedPrice: currentMarketPrice,
+        closedPrice: coinClosedPrice,
         status: "Executed",
       };
 
@@ -449,11 +478,10 @@ function TradeStation(props) {
       console.log("MarginOrder executed", updatedOrder, profitLoss);
       return updatedOrder;
     },
-    [bitcoinPrice, cash, setCash] // Destructure needed properties from props
+    [cash, setCash] // Destructure needed properties from props
   );
 
   const checkForLiquidation = useCallback(async () => {
-    const currentMarketPrice = props.bitcoinPrice;
     if (marginOrders.length > 0) {
       // Create a Promise for each margin order
       const marginOrderPromises = marginOrders.map(async (order) => {
@@ -471,17 +499,43 @@ function TradeStation(props) {
         //   "btcPriceChange: " + (currentMarketPrice - order.entryPrice)
         // );
         if (order.isOpen) {
-          if (
-            (order.type === "Long" &&
-              currentMarketPrice <= order.liquidationPrice) ||
-            (order.type === "Short" &&
-              currentMarketPrice >= order.liquidationPrice)
-          ) {
-            // Execute trade logic
-            const executedOrder = await executeMarginOrder(order);
-            return { ...executedOrder, isOpen: false, status: "Liquidated" };
-          } else {
-            return order;
+          let coinPrice;
+          if (order.market === "BTC-USD") {
+            coinPrice = props.realtimeBtcPrice;
+            if (
+              (order.type === "Long" && coinPrice <= order.liquidationPrice) ||
+              (order.type === "Short" && coinPrice >= order.liquidationPrice)
+            ) {
+              // Execute trade logic
+              const executedOrder = await executeMarginOrder(order, coinPrice);
+              return { ...executedOrder, isOpen: false, status: "Liquidated" };
+            } else {
+              return order;
+            }
+          } else if (order.market === "ETH-USD") {
+            coinPrice = props.realtimeEthPrice;
+            if (
+              (order.type === "Long" && coinPrice <= order.liquidationPrice) ||
+              (order.type === "Short" && coinPrice >= order.liquidationPrice)
+            ) {
+              // Execute trade logic
+              const executedOrder = await executeMarginOrder(order, coinPrice);
+              return { ...executedOrder, isOpen: false, status: "Liquidated" };
+            } else {
+              return order;
+            }
+          } else if (order.market === "XRP-USD") {
+            coinPrice = props.realtimeXrpPrice;
+            if (
+              (order.type === "Long" && coinPrice <= order.liquidationPrice) ||
+              (order.type === "Short" && coinPrice >= order.liquidationPrice)
+            ) {
+              // Execute trade logic
+              const executedOrder = await executeMarginOrder(order, coinPrice);
+              return { ...executedOrder, isOpen: false, status: "Liquidated" };
+            } else {
+              return order;
+            }
           }
         } else {
           return order;
@@ -494,7 +548,14 @@ function TradeStation(props) {
       // Update the array of margin orders
       setMarginOrders(updatedOrders);
     }
-  }, [props.bitcoinPrice, marginOrders, setMarginOrders, executeMarginOrder]);
+  }, [
+    props.realtimeBtcPrice,
+    props.realtimeEthPrice,
+    props.realtimeXrpPrice,
+    marginOrders,
+    setMarginOrders,
+    executeMarginOrder,
+  ]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -513,12 +574,12 @@ function TradeStation(props) {
 
   const marginBuy = () => {
     let cash = props.cash; // User's cash
-    let btcPrice = props.bitcoinPrice; // Current BTC price
+    let coinPrice = props.bitcoinPrice; // Current BTC price
     let usdAmountToBuy = parseFloat(tradeQuantity.current.value); // Quantity to buy
     let usdAmountToBuyValidation = tradeQuantity.current.value; // Quantity to buy for validation
     let leverage = selectedMargin; // Selected leverage
-    let btcAmountToBuy = usdAmountToBuy / btcPrice; // Quantity to buy in BTC
-    let btcAmountToBuyToFixed = btcAmountToBuy.toFixed(6); // Quantity to buy in BTC rounded to 6 decimal places
+    let coinAmountToBuy = usdAmountToBuy / coinPrice; // Quantity to buy in BTC
+    let btcAmountToBuyToFixed = coinAmountToBuy.toFixed(6); // Quantity to buy in BTC rounded to 6 decimal places
     let quantityWithLeverage = btcAmountToBuyToFixed * leverage; // Quantity to buy in BTC with leverage
 
     if (usdAmountToBuyValidation === 0 || usdAmountToBuyValidation === "") {
@@ -533,9 +594,9 @@ function TradeStation(props) {
     let newCashBalance = Number(cash - usdAmountToBuy).toFixed(2);
     let newLiquidationPrice = calculateLiquidationPrice(
       "Buy",
-      btcPrice,
+      coinPrice,
       leverage,
-      btcAmountToBuy,
+      coinAmountToBuy,
       newCashBalance
     );
 
@@ -550,8 +611,8 @@ function TradeStation(props) {
         status: "open",
         type: "Long",
         amount: usdAmountToBuy,
-        entryPrice: btcPrice,
-        market: "BTC-USD",
+        entryPrice: coinPrice,
+        market: props.selectedCoin,
         leverage: leverage,
         stopLoss: 0,
         takeProfit: 0,
@@ -565,29 +626,47 @@ function TradeStation(props) {
 
   const marginSell = () => {
     let cash = props.cash; // User's cash
-    let btcPrice = props.bitcoinPrice; // Current BTC price
+    let coinPrice = props.bitcoinPrice; // Current BTC price
     let usdAmountToSell = parseFloat(tradeQuantity.current.value); // Quantity to sell
     let usdAmountToSellValidation = tradeQuantity.current.value; // Quantity to sell for validation
     let leverage = selectedMargin; // Selected leverage
-    let btcAmountToSell = usdAmountToSell / btcPrice; // Quantity to sell in BTC
-    let btcAmountToSellToFixed = btcAmountToSell.toFixed(6); // Quantity to sell in BTC rounded to 6 decimal places
-    let quantityWithLeverage = btcAmountToSellToFixed * leverage; // Quantity to sell in BTC with leverage
+    let coinAmountToSell = usdAmountToSell / coinPrice; // Quantity to sell in BTC
+    let coinAmountToSellToFixed = coinAmountToSell.toFixed(6); // Quantity to sell in BTC rounded to 6 decimal places
+    let quantityWithLeverage = coinAmountToSellToFixed * leverage; // Quantity to sell in BTC with leverage
 
     if (usdAmountToSellValidation === 0 || usdAmountToSellValidation === "") {
       alert("Please enter a quantity");
       return;
     }
-    if (btcAmountToSell > props.portfolioHoldings.btcAmount) {
-      alert("Not enough BTC");
+
+    if (usdAmountToSell > cash) {
+      alert("Not enough cash");
       return;
+    }
+
+    if (props.coinSelected === "BTC-USD") {
+      if (coinAmountToSell > props.portfolioHoldings.btcAmount) {
+        alert("Not enough BTC");
+        return;
+      }
+    } else if (props.coinSelected === "ETH-USD") {
+      if (coinAmountToSell > props.portfolioHoldings.ethAmount) {
+        alert("Not enough ETH");
+        return;
+      }
+    } else if (props.coinSelected === "XRP-USD") {
+      if (coinAmountToSell > props.portfolioHoldings.xrpAmount) {
+        alert("Not enough XRP");
+        return;
+      }
     }
 
     let newCashBalance = Number(cash - usdAmountToSell).toFixed(2);
     let newLiquidationPrice = calculateLiquidationPrice(
       "Sell",
-      btcPrice,
+      coinPrice,
       leverage,
-      btcAmountToSell,
+      coinAmountToSell,
       newCashBalance
     );
 
@@ -602,8 +681,8 @@ function TradeStation(props) {
         status: "open",
         type: "Short",
         amount: usdAmountToSell,
-        entryPrice: btcPrice,
-        market: "BTC-USD",
+        entryPrice: coinPrice,
+        market: props.selectedCoin,
         leverage: leverage,
         stopLoss: 0,
         takeProfit: 0,

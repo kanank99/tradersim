@@ -1,10 +1,10 @@
-import './App.css';
-import Home from './components/Home';
+import "./App.css";
+import FetchCoinPrices from "./components/FetchCoinPrices";
 
 function App() {
   return (
     <div className="font-jost h-[100%]">
-      <Home />
+      <FetchCoinPrices />
     </div>
   );
 }
