@@ -174,12 +174,18 @@ function Orders(props) {
           <h1
             className={`${
               selectedForm === "position"
-                ? "text-[#ffffff]"
-                : "text-[#ffffffb3]"
+                ? "text-[#ffffff] relative"
+                : "text-[#ffffffb3] relative"
             }`}
             onClick={() => setSelectedForm("position")}
           >
             Positions
+            {positions.length > 0 ? (
+              <>
+                <span className="absolute -right-2 text-[#ffffffb3] animate-ping inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-75"></span>
+                <span className="absolute -right-2 inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+              </>
+            ) : null}
           </h1>
         </div>
       </div>

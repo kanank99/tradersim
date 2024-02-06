@@ -6,7 +6,8 @@ html {
 
 body {
   /* background: radial-gradient(circle at center 0,#7877c6 -300%,#000212 90%) no-repeat; */
-  background: #0d0b0e;
+  /* background: #0d0b0e; */
+  background: #0d1421;
   height: 100%;
   color: aliceblue;
 }
@@ -143,7 +144,7 @@ body {
 }
 
 .moving-border-green {
-  background: linear-gradient(#212121, #212121) padding-box,
+  background: linear-gradient(#0d0b0e, #0b180d) padding-box,
     linear-gradient(145deg, transparent 35%, #1cffa8, #068a4c) border-box;
   border: 2px solid transparent;
   background-size: 300% 200%;
@@ -151,7 +152,7 @@ body {
 }
 
 .moving-border-red {
-  background: linear-gradient(#212121, #212121) padding-box,
+  background: linear-gradient(#0d0b0e, #160808) padding-box,
     linear-gradient(145deg, transparent 35%, #ff1c1c, #8a0404) border-box;
   border: 2px solid transparent;
   background-size: 300% 200%;

@@ -115,9 +115,61 @@ const CoinbaseProTradingGame = (props) => {
         </div>
       </div>
       {/* end of modal */}
+      <div className="hidden md:flex gap-3 select-none">
+        <div
+          className="py-4 px-8"
+          onClick={() => props.setSelectedCoin(props.listOfCoins[0])}
+        >
+          <div className="flex w-full items-center ">
+            <img src={btc} alt="Bitcoin logo" className="w-12 h-12 mr-2" />
+            <div className="flex flex-col w-12 h-12">
+              <p className="relative text-[#ffffffb3] max-content">
+                BTC-USD
+                <span className="absolute -top-[2px] -right-2 text-[#ffffffb3] animate-ping inline-flex h-3 w-3 rounded-full bg-green-400 opacity-75"></span>
+                <span className="absolute -top-[2px] -right-2 inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+              </p>
+              <p className="">{props.realtimeBtcPrice}</p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          className="py-4 px-8"
+          onClick={() => props.setSelectedCoin(props.listOfCoins[1])}
+        >
+          <div className="flex w-full items-center ">
+            <img src={eth} alt="Bitcoin logo" className="w-12 h-12 mr-2" />
+            <div className="flex flex-col w-12 h-12">
+              <p className="relative text-[#ffffffb3] max-content">
+                ETH-USD
+                <span className="absolute -top-[2px] -right-2 text-[#ffffffb3] animate-ping inline-flex h-3 w-3 rounded-full bg-green-400 opacity-75"></span>
+                <span className="absolute -top-[2px] -right-2 inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+              </p>
+              <p className="">{props.realtimeEthPrice}</p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          className="py-4 px-8"
+          onClick={() => props.setSelectedCoin(props.listOfCoins[2])}
+        >
+          <div className="flex w-full items-center ">
+            <img src={xrp} alt="Bitcoin logo" className="w-12 h-12 mr-2" />
+            <div className="flex flex-col w-12 h-12">
+              <p className="relative text-[#ffffffb3] max-content">
+                XRP-USD
+                <span className="absolute -top-[2px] -right-2 text-[#ffffffb3] animate-ping inline-flex h-3 w-3 rounded-full bg-green-400 opacity-75"></span>
+                <span className="absolute -top-[2px] -right-2 inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+              </p>
+              <p className="">{props.realtimeXrpPrice}</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div
-        className="glass w-full mb-5 py-3 px-4 flex justify-center items-center cursor-pointer hover:shadow-lg hover:bg-gray-800"
+        className="glass w-full mb-5 py-3 px-4 flex justify-center items-center cursor-pointer hover:shadow-lg hover:bg-gray-800 md:hidden"
         onClick={() => setModalOpen(true)}
       >
         <div className="flex w-full justify-center items-center ">
