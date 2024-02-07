@@ -5,6 +5,7 @@ import xrp from "../assets/xrp-icon.png";
 import TradingViewWidget from "./TradingViewWidget";
 import TradeStation from "./TradeStation";
 import Orders from "./Orders";
+import MarginCall from "./MarginCall";
 
 const CoinbaseProTradingGame = (props) => {
   const [portfolioHoldings, setPortfolioHoldings] = useState({
@@ -22,6 +23,7 @@ const CoinbaseProTradingGame = (props) => {
   const [liquidationPrice, setLiquidationPrice] = useState(0);
   const [selectedForm, setSelectedForm] = useState("closedOrders");
   const [modalOpen, setModalOpen] = useState(false);
+  // const [marginCallOpen, setMarginCallOpen] = useState(false);
 
   useEffect(() => {
     // Update portfolioHoldingsUsdValue when bitcoinPrice changes
@@ -33,6 +35,7 @@ const CoinbaseProTradingGame = (props) => {
 
   return (
     <div className="px-8 h-full">
+      {props.equity <= 0 && <MarginCall />}
       {/* modal for selecting coin */}
       <div
         className={`fixed z-10 inset-0 overflow-y-auto ${

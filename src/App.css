@@ -12,6 +12,25 @@ body {
   color: aliceblue;
 }
 
+::-webkit-scrollbar {
+  width: 4px;
+  height: 0px;
+  max-height: 4px;
+}
+
+::-webkit-scrollbar-corner {
+  background: rgba(255, 255, 255, 0);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #262c38;
+  border-radius: 40px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 1);
+}
+
 .glass {
   background: #ffffff1a;
   backdrop-filter: blur(10px);

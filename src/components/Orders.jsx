@@ -134,7 +134,7 @@ function Orders(props) {
   };
 
   return (
-    <div className="glass w-full h-full my-[20px] tradingview-border">
+    <div className="glass w-full h-full my-[20px] tradingview-border ">
       <div className="flex gap-5 px-2 pt-2 bg-[#131722] rounded-tr-[10px] rounded-tl-[10px] tradingview-border-bottom">
         <div className="p-1 cursor-pointer select-none">
           <h1
@@ -275,6 +275,15 @@ function Orders(props) {
               return null;
             })}
           </div>
+          {orders.length > 0 ? (
+            <p className="text-[#ffffffb3] text-center mt-2">
+              *Unrealized P/L is calculated based on the current market price
+            </p>
+          ) : (
+            <div className="text-[#ffffffb3] flex items-center justify-center h-[100px]">
+              <p>No orders here ¯\_(ツ)_/¯</p>
+            </div>
+          )}
         </div>
       ) : null}
       {selectedForm === "openOrders" ? (
@@ -362,6 +371,15 @@ function Orders(props) {
               return null;
             })}
           </div>
+          {openOrders.length > 0 ? (
+            <p className="text-[#ffffffb3] text-center mt-2">
+              *Unrealized P/L is calculated based on the current market price
+            </p>
+          ) : (
+            <div className="text-[#ffffffb3] flex items-center justify-center h-[100px]">
+              <p>No orders here ¯\_(ツ)_/¯</p>
+            </div>
+          )}
         </div>
       ) : null}
       {selectedForm === "position" ? (
@@ -477,10 +495,19 @@ function Orders(props) {
               return null;
             })}
           </div>
+          {positions.length > 0 ? (
+            <p className="text-[#ffffffb3] text-center mt-2">
+              *Unrealized P/L is calculated based on the current market price
+            </p>
+          ) : (
+            <div className="text-[#ffffffb3] flex items-center justify-center h-[100px]">
+              <p>No trades here ¯\_(ツ)_/¯</p>
+            </div>
+          )}
         </div>
       ) : null}
       {/* show portfolio */}
-      <div className="flex justify-between">
+      {/* <div className="flex justify-between">
         <p>BTC</p>
         <p>ETH</p>
         <p>XRP</p>
@@ -494,7 +521,7 @@ function Orders(props) {
         <p>{props.realtimeBtcPrice}</p>
         <p>{props.realtimeEthPrice}</p>
         <p>{props.realtimeXrpPrice}</p>
-      </div>
+      </div> */}
     </div>
   );
 }
