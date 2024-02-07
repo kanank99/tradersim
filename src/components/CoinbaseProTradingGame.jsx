@@ -33,9 +33,28 @@ const CoinbaseProTradingGame = (props) => {
     }));
   }, [props.bitcoinPrice, portfolioHoldings.btcAmount]);
 
+  const executeStartOver = () => {
+    setPortfolioHoldings({
+      btcAmount: 0.5,
+      ethAmount: 0.2,
+      xrpAmount: 10430,
+    });
+    setPortfolioHoldingsUsdValue({
+      btcAmount: props.bitcoinPrice * portfolioHoldings.btcAmount,
+    });
+    setTradeHistory([]);
+    setPortfolioHistory([]);
+    setLimitOrders([]);
+    setMarginOrders([]);
+    setLiquidationPrice(0);
+    setSelectedForm("closedOrders");
+    props.setCash(1000);
+    props.setEquity(1000);
+  };
+
   return (
     <div className="px-8 h-full">
-      {props.equity <= 0 && <MarginCall />}
+      {props.equity <= 0 && <MarginCall executeStartOver={executeStartOver} />}
       {/* modal for selecting coin */}
       <div
         className={`fixed z-10 inset-0 overflow-y-auto ${

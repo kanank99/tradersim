@@ -38,35 +38,42 @@ function Orders(props) {
 
   // Use useMemo to memoize the calculated positions
   const updatedPositions = useMemo(() => {
-    return positions.map((position) => {
-      let updatedPnL = 0;
-      if (position.market === "BTC-USD") {
-        if (position.type === "Long") {
-          updatedPnL =
-            (currentMarketPriceBtc - position.entryPrice) * position.quantity;
-        } else if (position.type === "Short") {
-          updatedPnL =
-            (position.entryPrice - currentMarketPriceBtc) * position.quantity;
+    return positions
+      .filter((position) => position.isOpen)
+      .map((position) => {
+        let updatedPnL = 0;
+        // if (position.isOpen === false) {
+        //   // destroy the position
+        //   // console.log("position with id", position.id, "is closed");
+        //   // return { ...position, unrealizedPL: updatedPnL };
+        // }
+        if (position.market === "BTC-USD") {
+          if (position.type === "Long") {
+            updatedPnL =
+              (currentMarketPriceBtc - position.entryPrice) * position.quantity;
+          } else if (position.type === "Short") {
+            updatedPnL =
+              (position.entryPrice - currentMarketPriceBtc) * position.quantity;
+          }
+        } else if (position.market === "ETH-USD") {
+          if (position.type === "Long") {
+            updatedPnL =
+              (currentMarketPriceEth - position.entryPrice) * position.quantity;
+          } else if (position.type === "Short") {
+            updatedPnL =
+              (position.entryPrice - currentMarketPriceEth) * position.quantity;
+          }
+        } else if (position.market === "XRP-USD") {
+          if (position.type === "Long") {
+            updatedPnL =
+              (currentMarketPriceXrp - position.entryPrice) * position.quantity;
+          } else if (position.type === "Short") {
+            updatedPnL =
+              (position.entryPrice - currentMarketPriceXrp) * position.quantity;
+          }
         }
-      } else if (position.market === "ETH-USD") {
-        if (position.type === "Long") {
-          updatedPnL =
-            (currentMarketPriceEth - position.entryPrice) * position.quantity;
-        } else if (position.type === "Short") {
-          updatedPnL =
-            (position.entryPrice - currentMarketPriceEth) * position.quantity;
-        }
-      } else if (position.market === "XRP-USD") {
-        if (position.type === "Long") {
-          updatedPnL =
-            (currentMarketPriceXrp - position.entryPrice) * position.quantity;
-        } else if (position.type === "Short") {
-          updatedPnL =
-            (position.entryPrice - currentMarketPriceXrp) * position.quantity;
-        }
-      }
-      return { ...position, unrealizedPL: updatedPnL };
-    });
+        return { ...position, unrealizedPL: updatedPnL };
+      });
   }, [
     currentMarketPriceBtc,
     currentMarketPriceEth,
@@ -157,7 +164,7 @@ function Orders(props) {
             }`}
             onClick={() => setSelectedForm("openOrders")}
           >
-            Open Orders
+            Limit Orders
           </h1>
         </div>
         <div className="p-1 cursor-pointer select-none">
@@ -275,11 +282,7 @@ function Orders(props) {
               return null;
             })}
           </div>
-          {orders.length > 0 ? (
-            <p className="text-[#ffffffb3] text-center mt-2">
-              *Unrealized P/L is calculated based on the current market price
-            </p>
-          ) : (
+          {orders.length > 0 ? null : (
             <div className="text-[#ffffffb3] flex items-center justify-center h-[100px]">
               <p>No orders here ¯\_(ツ)_/¯</p>
             </div>
@@ -371,11 +374,7 @@ function Orders(props) {
               return null;
             })}
           </div>
-          {openOrders.length > 0 ? (
-            <p className="text-[#ffffffb3] text-center mt-2">
-              *Unrealized P/L is calculated based on the current market price
-            </p>
-          ) : (
+          {openOrders.length > 0 ? null : (
             <div className="text-[#ffffffb3] flex items-center justify-center h-[100px]">
               <p>No orders here ¯\_(ツ)_/¯</p>
             </div>

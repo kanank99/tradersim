@@ -8,7 +8,6 @@ function TradeStation(props) {
   const marginOrders = props.marginOrders;
   const setMarginOrders = props.setMarginOrders;
   const setLiquidationPrice = props.setLiquidationPrice;
-  const { cash, setCash } = props;
 
   const [spot, setSpot] = useState(false);
   const [margin, setMargin] = useState(true);
@@ -53,6 +52,7 @@ function TradeStation(props) {
         }
 
         let newCashBalance = (Number(cash) - Number(usdCost)).toFixed(2);
+        let newEquity = (Number(props.equity) - Number(usdCost)).toFixed(2);
         let newBtcAmountInWallet =
           Number(btcAmountInWallet) + Number(order.quantity);
         let newBtcValueInWallet = newBtcAmountInWallet * btcPrice;
@@ -77,6 +77,7 @@ function TradeStation(props) {
           date: currentDate,
         });
         props.setCash(newCashBalance);
+        props.setEquity(newEquity);
         props.setPortfolioHoldings(newPortfolioHoldings);
         props.setEquity((Number(props.equity) - Number(usdCost)).toFixed(2));
         props.setPortfolioHistory(newPortfolioHistory);
@@ -95,6 +96,7 @@ function TradeStation(props) {
         }
 
         let newCashBalance = (Number(cash) + Number(usdCost)).toFixed(2);
+        let newEquity = (Number(props.equity) + Number(usdCost)).toFixed(2);
         let newBtcAmountInWallet =
           Number(btcAmountInWallet) - Number(btcAmountToSell);
         let newBtcValueInWallet = newBtcAmountInWallet * btcPrice;
@@ -119,6 +121,7 @@ function TradeStation(props) {
           date: currentDate,
         });
         props.setCash(newCashBalance);
+        props.setEquity(newEquity);
         props.setEquity((Number(props.equity) + Number(usdCost)).toFixed(2));
         props.setPortfolioHoldings(newPortfolioHoldings);
         props.setPortfolioHistory(newPortfolioHistory);
@@ -219,6 +222,7 @@ function TradeStation(props) {
 
     if (selectedOrderType === "Market") {
       let newCashBalance = (Number(cash) - Number(usdCost)).toFixed(2);
+      let newEquity = (Number(props.equity) - Number(usdCost)).toFixed(2);
       let newCoinAmountInWallet = (
         Number(coinAmountInWallet) + Number(coinAmountToBuy)
       ).toFixed(5);
@@ -266,6 +270,7 @@ function TradeStation(props) {
         date: currentDate,
       });
       props.setCash(newCashBalance);
+      props.setEquity(newEquity);
       props.setPortfolioHoldings(newPortfolioHoldings);
       props.setPortfolioHistory(newPortfolioHistory);
       props.setTradeHistory(newTradeHistory);
@@ -341,6 +346,7 @@ function TradeStation(props) {
 
     if (selectedOrderType === "Market") {
       let newCashBalance = (Number(cash) + Number(usdCost)).toFixed(2);
+      let newEquity = (Number(props.equity) + Number(usdCost)).toFixed(2);
       let newCoinAmountInWallet = (
         Number(coinAmountInWallet) - Number(coinAmountToSell)
       ).toFixed(5);
@@ -389,6 +395,7 @@ function TradeStation(props) {
         date: currentDate,
       });
       props.setCash(newCashBalance);
+      props.setEquity(newEquity);
       props.setPortfolioHoldings(newPortfolioHoldings);
       props.setPortfolioHistory(newPortfolioHistory);
       props.setTradeHistory(newTradeHistory);
@@ -463,7 +470,7 @@ function TradeStation(props) {
       }
 
       // Update account balance
-      let updatedBalance = Number(cash + profitLoss);
+      // let updatedBalance = Number(cash + profitLoss);
 
       // Update order information
       let updatedOrder = {
@@ -471,33 +478,22 @@ function TradeStation(props) {
         profitLoss: profitLoss,
         closedPrice: coinClosedPrice,
         status: "Executed",
+        isOpen: false,
       };
 
       // Update props or state here as needed
-      setCash(updatedBalance);
-      console.log("MarginOrder executed", updatedOrder, profitLoss);
+      // setCash(updatedBalance);
+      props.setEquity((oldEquity) => oldEquity - order.amount);
+      console.log("MarginOrder executed: ", updatedOrder, profitLoss);
       return updatedOrder;
     },
-    [cash, setCash] // Destructure needed properties from props
+    [props] // Destructure needed properties from props
   );
 
   const checkForLiquidation = useCallback(async () => {
     if (marginOrders.length > 0) {
       // Create a Promise for each margin order
       const marginOrderPromises = marginOrders.map(async (order) => {
-        // let profitLoss =
-        //   (currentMarketPrice - order.entryPrice) * order.quantity;
-        // console.log(
-        //   "P&L: " + profitLoss,
-        //   "CurrentPrice: " + currentMarketPrice,
-        //   "order quantity: " + order.quantity,
-        //   "order entry price: " + order.entryPrice,
-        //   "leverage: " + order.leverage,
-        //   "btcPercentageChange: " +
-        //     ((currentMarketPrice - order.entryPrice) / order.entryPrice) * 100 +
-        //     "%",
-        //   "btcPriceChange: " + (currentMarketPrice - order.entryPrice)
-        // );
         if (order.isOpen) {
           let coinPrice;
           if (order.market === "BTC-USD") {
