@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useRef, useEffect, useCallback } from "react";
+import submitSound from "../assets/submitOrder.wav";
 
 function TradeStation(props) {
   const limitOrders = props.limitOrders;
@@ -274,6 +275,7 @@ function TradeStation(props) {
       props.setPortfolioHoldings(newPortfolioHoldings);
       props.setPortfolioHistory(newPortfolioHistory);
       props.setTradeHistory(newTradeHistory);
+      new Audio(submitSound).play();
       console.log(props.tradeHistory);
     } else if (selectedOrderType === "Limit") {
       // open a limit position and wait for price to reach limit price
@@ -399,6 +401,7 @@ function TradeStation(props) {
       props.setPortfolioHoldings(newPortfolioHoldings);
       props.setPortfolioHistory(newPortfolioHistory);
       props.setTradeHistory(newTradeHistory);
+      new Audio(submitSound).play();
       console.log(props.tradeHistory);
     } else if (selectedOrderType === "Limit") {
       if (tradePrice.current.value === 0 || tradePrice.current.value === "") {
@@ -598,6 +601,7 @@ function TradeStation(props) {
 
     setLiquidationPrice(newLiquidationPrice);
     props.setCash(newCashBalance);
+    new Audio(submitSound).play();
     setMarginOrders([
       ...marginOrders,
       {
@@ -668,6 +672,7 @@ function TradeStation(props) {
 
     setLiquidationPrice(newLiquidationPrice);
     props.setCash(newCashBalance);
+    new Audio(submitSound).play();
     setMarginOrders([
       ...marginOrders,
       {

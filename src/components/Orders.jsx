@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect, useMemo } from "react";
+import closeTradeSound from "../assets/closeTradeSound.mp3";
 
 function Orders(props) {
   const [orders, setOrders] = useState([]);
@@ -138,6 +139,7 @@ function Orders(props) {
         isOpen: false,
       },
     ]);
+    new Audio(closeTradeSound).play();
   };
 
   return (
