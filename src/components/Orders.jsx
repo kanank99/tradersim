@@ -236,10 +236,14 @@ function Orders(props) {
           <div className="flex flex-col">
             {orders.map((order) => {
               let coinSymbol = order.market.split("-")[0];
-
+              let divisibleBy2 = order.id % 2 === 0;
               if (order.isOpen === false) {
                 return (
-                  <div className="flex gap-2 justify-between px-4 text-center text-sm p-2 hover:bg-[#504d4d]">
+                  <div
+                    className={`flex gap-2 justify-between px-4 text-center text-sm p-2 hover:bg-[#283247] ${
+                      divisibleBy2 ? "bg-[#262c38]" : "bg-[#212836]"
+                    }`}
+                  >
                     <div className="">
                       <p className="text-[#ffffff] w-[70px] text-left">
                         {order.market}
@@ -328,10 +332,14 @@ function Orders(props) {
           <div className="flex flex-col">
             {openOrders.map((order) => {
               let coinSymbol = order.market.split("-")[0];
-
+              let divisibleBy2 = order.id % 2 === 0;
               if (order.isOpen === true) {
                 return (
-                  <div className="flex gap-2 justify-between px-4 text-center text-sm p-2 hover:bg-[#504d4d]">
+                  <div
+                    className={`flex gap-2 justify-between px-4 text-center text-sm p-2 hover:bg-[#283247] ${
+                      divisibleBy2 ? "bg-[#262c38]" : "bg-[#212836]"
+                    }`}
+                  >
                     <div className="">
                       <p className="text-[#ffffff] w-[70px] text-left">
                         {order.market}
@@ -430,10 +438,14 @@ function Orders(props) {
           <div className="flex flex-col">
             {memoizedPositions.map((order) => {
               let coinSymbol = order.market.split("-")[0];
-
+              let divisibleBy2 = order.id % 2 === 0;
               if (order.isOpen === true) {
                 return (
-                  <div className="flex gap-2 justify-between px-4 text-center text-sm p-2 hover:bg-[#504d4d]">
+                  <div
+                    className={`flex gap-2 justify-between px-4 text-center text-sm p-2 hover:bg-[#283247] ${
+                      divisibleBy2 ? "bg-[#262c38]" : "bg-[#212836]"
+                    }`}
+                  >
                     <div className="">
                       <p className="text-[#ffffff]">{order.market}</p>
                     </div>

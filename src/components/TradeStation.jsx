@@ -294,6 +294,7 @@ function TradeStation(props) {
       let currentDate = new Date();
 
       const newLimitOrder = {
+        id: limitOrders.length + 1,
         isOpen: true,
         limitPrice: parseFloat(tradePrice.current.value),
         quantity: parseFloat(tradeQuantity.current.value),

@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, memo } from "react";
+import React, { useState, useEffect, useRef, memo } from "react";
 
 function TradingViewWidget(props) {
+  const [selectedContainer, setSelectedContainer] = useState("chart");
+
   const container = useRef();
   const ethContainer = useRef();
   const xrpContainer = useRef();
@@ -87,43 +89,85 @@ function TradingViewWidget(props) {
   }, [props.selectedCoin]);
 
   return (
-    <div className="h-[560px] grow">
-      {props.selectedCoin === "BTC-USD" && (
-        <div
-          className="tradingview-widget-container"
-          ref={container}
-          style={{ height: "100%", width: "100%" }}
+    <div className="flex flex-col grow">
+      <div className="flex justify-between px-5 py-2 glass-container-select tradingview-border-trl">
+        <h1
+          className={`text-lg w-full ${
+            selectedContainer === "chart" ? "text-white" : "text-[#ffffffb3]"
+          }`}
+          onClick={() => setSelectedContainer("chart")}
         >
-          <div
-            className="tradingview-widget-container__widget"
-            style={{ height: "100%", width: "90%" }}
-          ></div>
-        </div>
-      )}
-      {props.selectedCoin === "ETH-USD" && (
-        <div
-          className="tradingview-widget-container"
-          ref={ethContainer}
-          style={{ height: "100%", width: "100%" }}
+          Chart
+        </h1>
+        <h1
+          className={`text-lg w-full ${
+            selectedContainer === "portfolio"
+              ? "text-white"
+              : "text-[#ffffffb3]"
+          }`}
+          onClick={() => setSelectedContainer("portfolio")}
         >
-          <div
-            className="tradingview-widget-container__widget"
-            style={{ height: "100%", width: "90%" }}
-          ></div>
-        </div>
-      )}
-      {props.selectedCoin === "XRP-USD" && (
-        <div
-          className="tradingview-widget-container"
-          ref={xrpContainer}
-          style={{ height: "100%", width: "100%" }}
+          Portfolio
+        </h1>
+        <h1
+          className={`text-lg w-full ${
+            selectedContainer === "leaderboard"
+              ? "text-white"
+              : "text-[#ffffffb3]"
+          }`}
+          onClick={() => setSelectedContainer("leaderboard")}
         >
+          Leaderboards
+        </h1>
+        <h1
+          className={`text-lg w-full ${
+            selectedContainer === "community"
+              ? "text-white"
+              : "text-[#ffffffb3]"
+          }`}
+          onClick={() => setSelectedContainer("community")}
+        >
+          Community
+        </h1>
+      </div>
+      <div className="h-[560px] grow">
+        {props.selectedCoin === "BTC-USD" && (
           <div
-            className="tradingview-widget-container__widget"
-            style={{ height: "100%", width: "90%" }}
-          ></div>
-        </div>
-      )}
+            className="tradingview-widget-container"
+            ref={container}
+            style={{ height: "100%", width: "100%" }}
+          >
+            <div
+              className="tradingview-widget-container__widget"
+              style={{ height: "100%", width: "90%" }}
+            ></div>
+          </div>
+        )}
+        {props.selectedCoin === "ETH-USD" && (
+          <div
+            className="tradingview-widget-container"
+            ref={ethContainer}
+            style={{ height: "100%", width: "100%" }}
+          >
+            <div
+              className="tradingview-widget-container__widget"
+              style={{ height: "100%", width: "90%" }}
+            ></div>
+          </div>
+        )}
+        {props.selectedCoin === "XRP-USD" && (
+          <div
+            className="tradingview-widget-container"
+            ref={xrpContainer}
+            style={{ height: "100%", width: "100%" }}
+          >
+            <div
+              className="tradingview-widget-container__widget"
+              style={{ height: "100%", width: "90%" }}
+            ></div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

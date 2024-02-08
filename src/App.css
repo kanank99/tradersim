@@ -59,6 +59,14 @@ body {
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 }
 
+.glass-container-select {
+  background: #131722;
+  backdrop-filter: blur(10px);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+}
+
 .max-content {
   width: max-content;
 }
@@ -160,6 +168,12 @@ body {
 
 .tradingview-border-bottom {
   border-bottom: 1px solid #363a45;
+}
+
+.tradingview-border-trl {
+  border-top: 1px solid #363a45;
+  border-left: 1px solid #363a45;
+  border-right: 1px solid #363a45;
 }
 
 .moving-border-green {
