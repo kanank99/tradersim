@@ -708,8 +708,8 @@ function TradeStation(props) {
       </div>
       <div className="flex w-full glass">
         <div
-          className={`py-2 w-full h-full text-[#ffffffb3] text-center rounded-[10px] cursor-pointer ${
-            spot ? "bg-[#ffffffc0] text-[#050505b3]" : null
+          className={`py-2 w-full h-full text-center rounded-[10px] cursor-pointer ${
+            spot ? "bg-[#ffffffc0] text-[#050505b3]" : "text-[#ffffffb3]"
           }`}
           onClick={() => {
             setSpot(true);
@@ -719,8 +719,8 @@ function TradeStation(props) {
           <p className={`${spot ? null : "hover:text-[white]"}`}>Spot</p>
         </div>
         <div
-          className={`py-2 w-full h-full text-[#ffffffb3] text-center rounded-[10px] cursor-pointer ${
-            margin ? "bg-[#ffffffc0] text-[#050505b3]" : null
+          className={`py-2 w-full h-full text-center rounded-[10px] cursor-pointer ${
+            margin ? "bg-[#ffffffc0] text-[#050505b3]" : "text-[#ffffffb3]"
           }`}
           onClick={() => {
             setMargin(true);
