@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef, memo } from "react";
+import PortfolioChart from "./PortfolioChart";
 
 function TradingViewWidget(props) {
   const [selectedContainer, setSelectedContainer] = useState("chart");
+  const [portfolioValue, setPortfolioValue] = useState(1000);
 
   const container = useRef();
   const ethContainer = useRef();
@@ -90,9 +92,26 @@ function TradingViewWidget(props) {
 
   // calculate portfolio value
 
-  // useEffect(() => {
-  //   const btcValue =
-  // });
+  useEffect(() => {
+    const btcValue =
+      Number(props.realtimeBtcPrice) *
+      Number(props.portfolioHoldings.btcAmount);
+    const ethValue =
+      Number(props.realtimeEthPrice) *
+      Number(props.portfolioHoldings.ethAmount);
+    const xrpValue =
+      Number(props.realtimeXrpPrice) *
+      Number(props.portfolioHoldings.xrpAmount);
+    const cash = Number(props.cash);
+    const portfolioValue = (btcValue + ethValue + xrpValue + cash).toFixed(2);
+    setPortfolioValue(portfolioValue);
+  }, [
+    props.realtimeBtcPrice,
+    props.realtimeEthPrice,
+    props.realtimeXrpPrice,
+    props.portfolioHoldings,
+    props.cash,
+  ]);
 
   return (
     <div className="flex flex-col grow">
@@ -181,8 +200,18 @@ function TradingViewWidget(props) {
       <div
         className={` ${
           selectedContainer === "portfolio" ? "flex" : "hidden"
-        } h-[560px] grow z-10 tradingview-border`}
-      ></div>
+        } h-[560px] grow z-10 tradingview-border bg-[#ffffff1a] w-full overflow-scroll`}
+      >
+        <div className="flex flex-col gap-2 items-center w-full mt-2">
+          <h1 className="text-2xl text-center uppercase text-[#ffffffb3] font-light">
+            Your Portfolio Value
+          </h1>
+          <p className="text-5xl text-center text-white font-light">
+            ${portfolioValue}
+          </p>
+          <PortfolioChart portfolioValue={portfolioValue} />
+        </div>
+      </div>
     </div>
   );
 }

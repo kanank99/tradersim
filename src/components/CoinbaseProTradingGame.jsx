@@ -9,9 +9,9 @@ import MarginCall from "./MarginCall";
 
 const CoinbaseProTradingGame = (props) => {
   const [portfolioHoldings, setPortfolioHoldings] = useState({
-    btcAmount: 0.5,
-    ethAmount: 0.2,
-    xrpAmount: 10430,
+    btcAmount: 0,
+    ethAmount: 0,
+    xrpAmount: 0,
   });
   const [portfolioHoldingsUsdValue, setPortfolioHoldingsUsdValue] = useState({
     btcAmount: props.bitcoinPrice * portfolioHoldings.btcAmount,
@@ -242,7 +242,14 @@ const CoinbaseProTradingGame = (props) => {
           realtimeEthPrice={props.realtimeEthPrice}
           realtimeXrpPrice={props.realtimeXrpPrice}
         />
-        <TradingViewWidget selectedCoin={props.selectedCoin} />
+        <TradingViewWidget
+          selectedCoin={props.selectedCoin}
+          realtimeBtcPrice={props.realtimeBtcPrice}
+          realtimeEthPrice={props.realtimeEthPrice}
+          realtimeXrpPrice={props.realtimeXrpPrice}
+          cash={props.cash}
+          portfolioHoldings={portfolioHoldings}
+        />
       </div>
       <Orders
         tradeHistory={tradeHistory}
