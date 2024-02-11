@@ -1,7 +1,7 @@
 import React from "react";
 
 function PortfolioChart() {
-  return <div>PortfolioChart</div>;
+  return <div className="w-full h-full">PortfolioChart</div>;
 }
 
 export default PortfolioChart;

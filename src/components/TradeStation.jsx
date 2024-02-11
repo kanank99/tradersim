@@ -698,7 +698,7 @@ function TradeStation(props) {
 
   return (
     <div
-      className={`glass w-full lg:w-1/4 py-3 px-4 flex flex-col gap-4 box-border select-none ${
+      className={`glass w-full lg:w-[30%] py-3 px-4 flex flex-col gap-4 box-border select-none ${
         buy ? "moving-border-green" : "moving-border-red"
       } `}
     >

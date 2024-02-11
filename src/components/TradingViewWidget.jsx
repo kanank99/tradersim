@@ -88,6 +88,12 @@ function TradingViewWidget(props) {
     }
   }, [props.selectedCoin]);
 
+  // calculate portfolio value
+
+  // useEffect(() => {
+  //   const btcValue =
+  // });
+
   return (
     <div className="flex flex-col grow">
       <div className="flex justify-between px-5 py-2 glass-container-select tradingview-border-trl">
@@ -130,7 +136,11 @@ function TradingViewWidget(props) {
           Community
         </h1>
       </div>
-      <div className="h-[560px] grow">
+      <div
+        className={` ${
+          selectedContainer === "chart" ? "block" : "hidden"
+        } h-[560px] grow`}
+      >
         {props.selectedCoin === "BTC-USD" && (
           <div
             className="tradingview-widget-container"
@@ -168,6 +178,11 @@ function TradingViewWidget(props) {
           </div>
         )}
       </div>
+      <div
+        className={` ${
+          selectedContainer === "portfolio" ? "flex" : "hidden"
+        } h-[560px] grow z-10 tradingview-border`}
+      ></div>
     </div>
   );
 }
