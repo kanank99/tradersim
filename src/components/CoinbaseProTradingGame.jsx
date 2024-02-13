@@ -9,9 +9,9 @@ import MarginCall from "./MarginCall";
 
 const CoinbaseProTradingGame = (props) => {
   const [portfolioHoldings, setPortfolioHoldings] = useState({
-    btcAmount: 0,
-    ethAmount: 0,
-    xrpAmount: 0,
+    btcAmount: 0.04,
+    ethAmount: 0.2,
+    xrpAmount: 430,
   });
   const [portfolioHoldingsUsdValue, setPortfolioHoldingsUsdValue] = useState({
     btcAmount: props.bitcoinPrice * portfolioHoldings.btcAmount,
@@ -23,6 +23,7 @@ const CoinbaseProTradingGame = (props) => {
   const [liquidationPrice, setLiquidationPrice] = useState(0);
   const [selectedForm, setSelectedForm] = useState("closedOrders");
   const [modalOpen, setModalOpen] = useState(false);
+  const [positonsClosedAmount, setPositionsClosedAmount] = useState(0);
   // const [marginCallOpen, setMarginCallOpen] = useState(false);
 
   useEffect(() => {
@@ -249,6 +250,7 @@ const CoinbaseProTradingGame = (props) => {
           realtimeXrpPrice={props.realtimeXrpPrice}
           cash={props.cash}
           portfolioHoldings={portfolioHoldings}
+          positionsClosedAmount={positonsClosedAmount}
         />
       </div>
       <Orders
@@ -271,6 +273,7 @@ const CoinbaseProTradingGame = (props) => {
         realtimeBtcPrice={props.realtimeBtcPrice}
         realtimeEthPrice={props.realtimeEthPrice}
         realtimeXrpPrice={props.realtimeXrpPrice}
+        setPositionsClosedAmount={setPositionsClosedAmount}
       />
       {/* <p>Portfolio:</p>
       <ul>

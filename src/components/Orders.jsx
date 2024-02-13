@@ -139,6 +139,7 @@ function Orders(props) {
         isOpen: false,
       },
     ]);
+    props.setPositionsClosedAmount((prevAmount) => prevAmount + 1);
     new Audio(closeTradeSound).play();
   };
 
