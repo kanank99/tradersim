@@ -1,6 +1,8 @@
 import React from "react";
 import { useState, useEffect, useMemo } from "react";
 import closeTradeSound from "../assets/closeTradeSound.mp3";
+import { Toaster } from "../ui/sonner";
+import { toast } from "sonner";
 
 function Orders(props) {
   const [orders, setOrders] = useState([]);
@@ -140,6 +142,13 @@ function Orders(props) {
       },
     ]);
     props.setPositionsClosedAmount((prevAmount) => prevAmount + 1);
+    toast("Event has been created", {
+      description: "Sunday, December 03, 2023 at 9:00 AM",
+      action: {
+        label: "Undo",
+        onClick: () => console.log("Undo"),
+      },
+    });
     new Audio(closeTradeSound).play();
   };
 
@@ -503,6 +512,7 @@ function Orders(props) {
                         Close
                       </button>
                     </div>
+                    <Toaster />
                   </div>
                 );
               }

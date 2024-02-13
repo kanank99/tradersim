@@ -265,17 +265,19 @@ function TradingViewWidget(props) {
             />
           </div> */}
           <div className="flex flex-col gap-2 w-full px-10">
-            <div className="flex gap-3">
-              <h1 className="text-2xl uppercase text-[#ffffffb3] font-light">
-                Cash
-              </h1>
-              <p className="text-2xl text-white">${props.cash}</p>
-            </div>
-            <div className="flex gap-3">
-              <h1 className="text-2xl uppercase text-[#ffffffb3] font-light">
-                Crypto Holdings
-              </h1>
-              <p className="text-2xl text-white">${cryptoUsdValue}</p>
+            <div className="flex justify-around">
+              <div className="flex gap-3">
+                <h1 className="text-2xl uppercase text-[#ffffffb3] font-light">
+                  Cash
+                </h1>
+                <p className="text-2xl text-white">${props.cash}</p>
+              </div>
+              <div className="flex gap-3">
+                <h1 className="text-2xl uppercase text-[#ffffffb3] font-light">
+                  Crypto Holdings
+                </h1>
+                <p className="text-2xl text-white">${cryptoUsdValue}</p>
+              </div>
             </div>
             <div className="flex flex-col gap-2 items-center w-full mt-2">
               <div className="flex justify-between w-full tradingview-border-bottom">
