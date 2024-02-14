@@ -4,8 +4,8 @@ import Header from "./Header";
 
 const Home = (props) => {
   const [bitcoinPrice, setBitcoinPrice] = useState(null);
-  const [cash, setCash] = useState(1000);
-  const [equity, setEquity] = useState(cash);
+  const [cash, setCash] = useState(null);
+  const [equity, setEquity] = useState(null);
   const listOfCoins = ["BTC-USD", "ETH-USD", "XRP-USD"];
   const [selectedCoin, setSelectedCoin] = useState(listOfCoins[0]);
 

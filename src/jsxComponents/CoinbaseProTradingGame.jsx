@@ -6,16 +6,16 @@ import TradingViewWidget from "./TradingViewWidget";
 import TradeStation from "./TradeStation";
 import Orders from "./Orders";
 import MarginCall from "./MarginCall";
+import { auth, db } from "../firebase";
+import { updateDoc, getDoc, doc, setDoc } from "firebase/firestore";
 
 const CoinbaseProTradingGame = (props) => {
   const [portfolioHoldings, setPortfolioHoldings] = useState({
-    btcAmount: 0.04,
-    ethAmount: 0.2,
-    xrpAmount: 430,
+    btcAmount: 0.01,
+    ethAmount: 0.01,
+    xrpAmount: 1000,
   });
-  const [portfolioHoldingsUsdValue, setPortfolioHoldingsUsdValue] = useState({
-    btcAmount: props.bitcoinPrice * portfolioHoldings.btcAmount,
-  });
+
   const [tradeHistory, setTradeHistory] = useState([]);
   const [portfolioHistory, setPortfolioHistory] = useState([]);
   const [limitOrders, setLimitOrders] = useState([]);
@@ -24,24 +24,88 @@ const CoinbaseProTradingGame = (props) => {
   const [selectedForm, setSelectedForm] = useState("closedOrders");
   const [modalOpen, setModalOpen] = useState(false);
   const [positonsClosedAmount, setPositionsClosedAmount] = useState(0);
-  // const [marginCallOpen, setMarginCallOpen] = useState(false);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+  const createNewUserDoc = async (user) => {
+    // Reference to the user's document in Firestore using the Google user's UID
+    const userDocRef = doc(db, "users", user.uid);
+
+    try {
+      // Check if the user document already exists
+      const docSnap = await getDoc(userDocRef);
+      if (!docSnap.exists()) {
+        // If the document does not exist, create a new one with default values
+        await setDoc(userDocRef, {
+          cash: 1000,
+          equity: 1000,
+          portfolioHoldings: {
+            btcAmount: 0.04,
+            ethAmount: 0.2,
+            xrpAmount: 430,
+          },
+          tradeHistory: [],
+          portfolioHistory: [],
+          limitOrders: [],
+          marginOrders: [],
+        });
+        console.log("New user document created for:", user.email);
+      } else {
+        // If the document already exists, you can handle this case accordingly
+        console.log("User document already exists for:", user.email);
+      }
+    } catch (error) {
+      // Handle any errors that occur during the getDoc or setDoc operations
+      console.error("Error creating user document:", error);
+    }
+  };
 
   useEffect(() => {
-    // Update portfolioHoldingsUsdValue when bitcoinPrice changes
-    setPortfolioHoldingsUsdValue((prevValues) => ({
-      ...prevValues,
-      btcAmount: props.bitcoinPrice * portfolioHoldings.btcAmount,
-    }));
-  }, [props.bitcoinPrice, portfolioHoldings.btcAmount]);
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        createNewUserDoc(user);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setPortfolioHoldings(data.portfolioHoldings);
+          setTradeHistory(data.tradeHistory);
+          setPortfolioHistory(data.portfolioHistory);
+          setLimitOrders(data.limitOrders);
+          setMarginOrders(data.marginOrders);
+          props.setCash(data.cash);
+          props.setEquity(data.equity);
+          setIsDataLoaded(true);
+        } else {
+          console.log("No such document!");
+        }
+      }
+    };
+    fetchUserData();
+  }, [props.bitcoinPrice]);
+
+  // const [marginCallOpen, setMarginCallOpen] = useState(false);
+
+  // useEffect(() => {
+  //   // Update portfolioHoldingsUsdValue when bitcoinPrice changes
+  //   setPortfolioHoldingsUsdValue((prevValues) => ({
+  //     ...prevValues,
+  //     btcAmount: props.bitcoinPrice * portfolioHoldings.btcAmount,
+  //   }));
+  // }, [props.bitcoinPrice, portfolioHoldings.btcAmount]);
 
   const executeStartOver = () => {
     setPortfolioHoldings({
       btcAmount: 0.5,
       ethAmount: 0.2,
       xrpAmount: 10430,
-    });
-    setPortfolioHoldingsUsdValue({
-      btcAmount: props.bitcoinPrice * portfolioHoldings.btcAmount,
     });
     setTradeHistory([]);
     setPortfolioHistory([]);
@@ -52,6 +116,35 @@ const CoinbaseProTradingGame = (props) => {
     props.setCash(1000);
     props.setEquity(1000);
   };
+
+  useEffect(() => {
+    if (isDataLoaded) {
+      const updateAllUserData = async () => {
+        const user = auth.currentUser;
+        if (user) {
+          const docRef = doc(db, "users", user.uid);
+          await updateDoc(docRef, {
+            cash: Number(props.cash),
+            equity: Number(props.equity),
+            portfolioHoldings: portfolioHoldings,
+            tradeHistory: tradeHistory,
+            portfolioHistory: portfolioHistory,
+            limitOrders: limitOrders,
+            marginOrders: marginOrders,
+          });
+        }
+      };
+      updateAllUserData();
+    }
+  }, [
+    props.cash,
+    props.equity,
+    portfolioHoldings,
+    tradeHistory,
+    portfolioHistory,
+    limitOrders,
+    marginOrders,
+  ]);
 
   return (
     <div className="px-8 h-full">
@@ -222,8 +315,6 @@ const CoinbaseProTradingGame = (props) => {
           setCash={props.setCash}
           portfolioHoldings={portfolioHoldings}
           setPortfolioHoldings={setPortfolioHoldings}
-          portfolioHoldingsUsdValue={portfolioHoldingsUsdValue}
-          setPortfolioHoldingsUsdValue={setPortfolioHoldingsUsdValue}
           tradeHistory={tradeHistory}
           setTradeHistory={setTradeHistory}
           portfolioHistory={portfolioHistory}

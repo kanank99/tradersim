@@ -115,6 +115,13 @@ function Orders(props) {
     const updatedPositions = positions.filter((pos) => pos.id !== position.id);
     setPositions(updatedPositions);
     props.setMarginOrders(updatedPositions);
+
+    // if (updatedPositions.length === 0) {
+    //   let equityNum = Number(cash);
+    //   equityNum = equityNum.toFixed(2);
+    //   setCash(equityNum);
+    // }
+
     setOrders([
       ...orders,
       {

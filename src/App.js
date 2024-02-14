@@ -98,6 +98,19 @@ function App() {
           </div>
         </div>
       </div>
+      {/* 
+        show users google profile picture and name
+      */}
+      <div className="">
+        {auth.currentUser ? (
+          <div>
+            <img src={auth.currentUser.photoURL} alt="profile" />
+            <h1>{auth.currentUser.displayName}</h1>
+          </div>
+        ) : (
+          <h1>Not logged in</h1>
+        )}
+      </div>
     </div>
   );
 }
