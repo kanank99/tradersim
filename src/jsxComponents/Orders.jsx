@@ -13,7 +13,6 @@ function Orders(props) {
 
   // const closedOrders = orders.filter(order => order.status === 'closed')
   // const openOrders = orders.filter(order => order.status === 'open')
-  // const fills = orders.filter(order => order.status === 'filled')
   // const positions = orders.filter(order => order.status === 'position')
 
   const selectedForm = props.selectedForm;
@@ -101,13 +100,18 @@ function Orders(props) {
 
   const executeClosePosition = (position) => {
     setEquity((Number(equity) + Number(position.unrealizedPL)).toFixed(2));
-    setCash(
-      (
-        Number(cash) +
-        Number(position.amount) +
-        Number(position.unrealizedPL)
-      ).toFixed(2)
-    );
+    // if there are no more open positions, set cash to equity
+    if (memoizedPositions.length === 0) {
+      setCash(equity);
+    } else {
+      setCash(
+        (
+          Number(cash) +
+          Number(position.amount) +
+          Number(position.unrealizedPL)
+        ).toFixed(2)
+      );
+    }
     // setEquity((Number(equity) + Number(position.unrealizedPL)).toFixed(2));
 
     console.log(equity);
@@ -184,16 +188,6 @@ function Orders(props) {
             onClick={() => setSelectedForm("openOrders")}
           >
             Limit Orders
-          </h1>
-        </div>
-        <div className="p-1 cursor-pointer select-none">
-          <h1
-            className={`${
-              selectedForm === "fills" ? "text-[#ffffff]" : "text-[#ffffffb3]"
-            }`}
-            onClick={() => setSelectedForm("fills")}
-          >
-            Fills
           </h1>
         </div>
         <div className="p-1 cursor-pointer select-none">
@@ -294,7 +288,7 @@ function Orders(props) {
                       </p>
                     </div>
                     <div className="">
-                      <p className="text-[#ffffff] w-[70px] text-right">
+                      <p className="text-[#ffffff] w-[70px] text-right overflow-hidden">
                         {order.quantity}
                         <span className="text-[#ffffffb3]">{coinSymbol}</span>
                       </p>

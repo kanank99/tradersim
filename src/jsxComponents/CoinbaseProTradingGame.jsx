@@ -47,6 +47,8 @@ const CoinbaseProTradingGame = (props) => {
           portfolioHistory: [],
           limitOrders: [],
           marginOrders: [],
+          profilePicture: user.photoURL,
+          displayName: user.displayName,
         });
         console.log("New user document created for:", user.email);
       } else {

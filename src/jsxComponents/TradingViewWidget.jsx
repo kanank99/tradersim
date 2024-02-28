@@ -3,6 +3,7 @@ import PortfolioChart from "./PortfolioChart";
 import btc from "../assets/btc-icon.png";
 import eth from "../assets/eth-icon.png";
 import xrp from "../assets/xrp-icon.png";
+import Leaderboards from "./Leaderboards";
 // import { PieChart } from "react-minimal-pie-chart";
 
 function TradingViewWidget(props) {
@@ -223,7 +224,7 @@ function TradingViewWidget(props) {
         } h-[560px] grow z-10 tradingview-border glass w-full overflow-scroll portfolio-bg no-scrollbar`}
       >
         <div className="flex flex-col gap-2 items-center w-full mt-2">
-          <h1 className="text-2xl text-center uppercase text-[#ffffffb3] font-light">
+          <h1 className="text-2xl text-center uppercase text-[#ffffffb3] font-light tracking-wide">
             Your Portfolio Value
           </h1>
           <p className="text-5xl text-center text-white font-light">
@@ -362,6 +363,13 @@ function TradingViewWidget(props) {
             </div>
           </div>
         </div>
+      </div>
+      <div
+        className={` ${
+          selectedContainer === "leaderboard" ? "block" : "hidden"
+        } h-[560px] grow z-10 tradingview-border glass w-full overflow-scroll portfolio-bg no-scrollbar`}
+      >
+        <Leaderboards />
       </div>
     </div>
   );
